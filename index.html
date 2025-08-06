@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Supabase - Directorio</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 50px auto; 
+            padding: 20px;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px;
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 12px; 
+            text-align: left; 
+        }
+        th { 
+            background-color: #f4f4f4; 
+            font-weight: bold;
+        }
+        .loading { 
+            color: #666; 
+            font-style: italic;
+        }
+        .error { 
+            color: red; 
+            background: #ffe6e6; 
+            padding: 10px; 
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Conexión Supabase - Directorio</h1>
+    
+    <div id="status" class="loading">Conectando a la base de datos...</div>
+    
+    <div id="empleados-container">
+        <table id="empleados-table" style="display: none;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>nomEx</th>
+                    <th>adscripcion</th>
+                    <th>categoria</th>
+                    <th>piso</th>
+                    <th>ubicacion</th>
+                    <th>extension</th>
+                </tr>
+            </thead>
+            <tbody id="empleados-body">
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Supabase CDN PRUEBA-->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // ⚠️ REEMPLAZA ESTOS VALORES CON LOS TUYOS
+        const SUPABASE_URL = 'TU_SUPABASE_URL_AQUI'
+        const SUPABASE_ANON_KEY = 'TU_SUPABASE_ANON_KEY_AQUI'
+        
+        // Si estás usando Netlify con variables de entorno, usa esto en su lugar:
+        // const SUPABASE_URL = process.env.SUPABASE_URL
+        // const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY
+        
+        // Crear cliente de Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+        
+        // Función para cargar empleados
+        async function cargarEmpleados() {
+            try {
+                document.getElementById('status').textContent = 'Cargando empleados...'
+                
+                // Consultar tabla de empleados
+                const { data: empleados, error } = await supabase
+                    .from('empleados')
+                    .select('*')
+                    .order('nombre', { ascending: true })
+                
+                if (error) {
+                    throw error
+                }
+                
+                // Mostrar resultados
+                mostrarEmpleados(empleados)
+                
+            } catch (error) {
+                console.error('Error:', error)
+                document.getElementById('status').innerHTML = 
+                    `<div class="error">Error al conectar: ${error.message}</div>`
+            }
+        }
+        
+        // Función para mostrar empleados en la tabla
+        function mostrarEmpleados(empleados) {
+            const tbody = document.getElementById('empleados-body')
+            const table = document.getElementById('empleados-table')
+            const status = document.getElementById('status')
+            
+            if (empleados && empleados.length > 0) {
+                // Limpiar tabla
+                tbody.innerHTML = ''
+                
+                // Agregar cada empleado
+                empleados.forEach(empleado => {
+                    const row = tbody.insertRow()
+                    row.innerHTML = `
+                        <td>${empleado.id}</td>
+                        <td>${empleado.nomEx || '-'}</td>
+                        <td>${empleado.adscripcion || '-'}</td>
+                        <td>${empleado.categoria || '-'}</td>
+                        <td>${empleado.piso || '-'}</td>
+                        <td>${empleado.ubicacion || '-'}</td>
+                        <td>${empleado.extension || '-'}</td>
+                    `
+                })
+                
+                // Mostrar tabla y ocultar status
+                table.style.display = 'table'
+                status.textContent = `✅ Conexión exitosa - ${empleados.length} empleados encontrados`
+                status.className = ''
+                
+            } else {
+                status.innerHTML = '📝 Conexión exitosa, pero no hay empleados en la tabla'
+            }
+        }
+        
+        // Cargar empleados cuando se carga la página
+        window.addEventListener('DOMContentLoaded', cargarEmpleados)
+    </script>
+</body>
+</html>
