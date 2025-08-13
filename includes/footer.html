@@ -1,0 +1,199 @@
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-content">
+        <!-- Información principal del footer -->
+        <div class="footer-grid">
+            <!-- Sección: Información de la empresa -->
+            <div class="footer-section">
+                <h3>Dirección Jurídica</h3>
+                <p>Sistema integral de gestión de personal y directorio empresarial.</p>
+                <p>Optimizando la comunicación interna y la organización departamental.</p>
+                
+                <!-- Estadísticas del sistema -->
+                <div class="footer-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="footerTotalEmployees">-</span>
+                        <span class="stat-label">Empleados</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="footerTotalDepartments">-</span>
+                        <span class="stat-label">Departamentos</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="footerSystemStatus">●</span>
+                        <span class="stat-label">Estado</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sección: Enlaces rápidos -->
+            <div class="footer-section">
+                <h3>Enlaces Rápidos</h3>
+                <div class="footer-links">
+                    <a href="index.html">
+                        <span class="link-icon">🏠</span>
+                        Página Principal
+                    </a>
+                    <a href="directorio.html">
+                        <span class="link-icon">📋</span>
+                        Directorio Completo
+                    </a>
+                    <a href="organigrama.html">
+                        <span class="link-icon">🏢</span>
+                        Organigrama
+                    </a>
+                    <a href="insumos.html">
+                        <span class="link-icon">📦</span>
+                        Gestión de Insumos
+                    </a>
+                    <a href="contacto.html">
+                        <span class="link-icon">📞</span>
+                        Información de Contacto
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Sección: Soporte técnico -->
+            <div class="footer-section">
+                <h3>Soporte Técnico</h3>
+                <div class="footer-links">
+                    <a href="#" onclick="showHelp()">
+                        <span class="link-icon">❓</span>
+                        Mesa de Ayuda
+                    </a>
+                    <a href="#" onclick="showManual()">
+                        <span class="link-icon">📖</span>
+                        Manual de Usuario
+                    </a>
+                    <a href="#" onclick="reportIssue()">
+                        <span class="link-icon">🐛</span>
+                        Reportar Problema
+                    </a>
+                    <a href="#" onclick="showChangelog()">
+                        <span class="link-icon">📝</span>
+                        Notas de Versión
+                    </a>
+                    <a href="#" onclick="downloadBackup()">
+                        <span class="link-icon">💾</span>
+                        Respaldo de Datos
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Sección: Información de contacto -->
+            <div class="footer-section">
+                <h3>Información de Contacto</h3>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <span class="contact-icon">📧</span>
+                        <div class="contact-details">
+                            <strong>Email:</strong>
+                            <a href="mailto:soporte@empresa.com">soporte@empresa.com</a>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <span class="contact-icon">📞</span>
+                        <div class="contact-details">
+                            <strong>Teléfono:</strong>
+                            <a href="tel:+525512345678">+52 55 1234 5678</a>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <span class="contact-icon">🏢</span>
+                        <div class="contact-details">
+                            <strong>Ubicación:</strong>
+                            <span>Piso 6 Oriente</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <span class="contact-icon">🕐</span>
+                        <div class="contact-details">
+                            <strong>Horario:</strong>
+                            <span>Lun - Vie: 9:00 - 18:00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Redes sociales / Enlaces adicionales -->
+                <div class="social-links">
+                    <a href="#" class="social-link" title="Intranet corporativa">
+                        <span class="social-icon">🌐</span>
+                    </a>
+                    <a href="#" class="social-link" title="Sistema de tickets">
+                        <span class="social-icon">🎫</span>
+                    </a>
+                    <a href="#" class="social-link" title="Portal de empleados">
+                        <span class="social-icon">👥</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección inferior del footer -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <div class="footer-left">
+                    <p>&copy; <span id="currentYear">2025</span> Dirección Jurídica. Todos los derechos reservados.</p>
+                    <p class="footer-subtitle">
+                        Desarrollado con ❤️ para mejorar la comunicación interna | Versión 1.2.0
+                    </p>
+                </div>
+                
+                <div class="footer-center">
+                    <div class="footer-badges">
+                        <span class="badge badge-php" title="Desarrollado en HTML5">HTML5</span>
+                        <span class="badge badge-responsive" title="Diseño responsivo">📱</span>
+                        <span class="badge badge-secure" title="Conexión segura">🔒</span>
+                    </div>
+                </div>
+                
+                <div class="footer-right">
+                    <div class="footer-actions">
+                        <button class="footer-btn" onclick="scrollToTop()" title="Ir arriba">
+                            ↑ Subir
+                        </button>
+                        <button class="footer-btn" onclick="toggleTheme()" title="Cambiar tema">
+                            🌙 Tema
+                        </button>
+                        <button class="footer-btn" onclick="printPage()" title="Imprimir página">
+                            🖨️ Imprimir
+                        </button>
+                    </div>
+                    
+                    <!-- Información del sistema -->
+                    <div class="system-info">
+                        <small>
+                            Última actualización: <span id="lastUpdated"></span> |
+                            Servidor: <span id="serverName"></span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Widget de estado del sistema -->
+    <div class="system-status-widget" id="systemStatusWidget">
+        <div class="status-indicator">
+            <span class="status-dot" id="statusDot"></span>
+            <span class="status-text" id="statusText">Verificando conexión...</span>
+        </div>
+        <div class="status-details" id="statusDetails" style="display: none;">
+            <div class="status-item">
+                <span class="status-label">Base de datos:</span>
+                <span class="status-value" id="dbStatus">Conectando...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Última sincronización:</span>
+                <span class="status-value" id="lastSync">--:--</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Rendimiento:</span>
+                <span class="status-value" id="performance">--ms</span>
+            </div>
+        </div>
+    </div>
+</footer>

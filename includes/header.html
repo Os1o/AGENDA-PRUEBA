@@ -1,0 +1,84 @@
+<!-- Navigation Bar -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="logo">
+            <div class="logo-icon">DJ</div>
+            <div class="logo-text">Directorio Jurídico</div>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">Inicio</a></li>
+            <li><a href="directorio.html">Directorio</a></li>
+            <li><a href="organigrama.html">Organigrama</a></li>
+            <li><a href="insumos.html">Insumos</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+        
+        <div class="nav-actions">
+            <!-- Búsqueda rápida en el header -->
+            <div class="quick-search" id="quickSearch" style="display: none;">
+                <input type="text" 
+                       class="quick-search-input" 
+                       placeholder="Buscar empleado..." 
+                       id="quickSearchInput">
+                <button class="quick-search-btn" onclick="quickSearch()">🔍</button>
+            </div>
+            
+            <!-- Botón de búsqueda -->
+            <button class="search-toggle" onclick="toggleQuickSearch()" title="Búsqueda rápida">
+                🔍
+            </button>
+            
+            <!-- Menú móvil -->
+            <button class="mobile-menu" onclick="toggleMobileMenu()">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Menú móvil desplegable -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-content">
+            <a href="index.html" class="mobile-nav-link active">
+                <span class="mobile-nav-icon">🏠</span>
+                Inicio
+            </a>
+            <a href="directorio.html" class="mobile-nav-link">
+                <span class="mobile-nav-icon">📋</span>
+                Directorio
+            </a>
+            <a href="organigrama.html" class="mobile-nav-link">
+                <span class="mobile-nav-icon">🏢</span>
+                Organigrama
+            </a>
+            <a href="insumos.html" class="mobile-nav-link">
+                <span class="mobile-nav-icon">📦</span>
+                Insumos
+            </a>
+            <a href="contacto.html" class="mobile-nav-link">
+                <span class="mobile-nav-icon">📞</span>
+                Contacto
+            </a>
+            
+            <!-- Información adicional en móvil -->
+            <div class="mobile-nav-info">
+                <div class="mobile-nav-section">
+                    <h4>Sistema</h4>
+                    <p>Directorio Empresarial</p>
+                    <p>Versión 1.2.0</p>
+                </div>
+                
+                <div class="mobile-nav-section">
+                    <h4>Soporte</h4>
+                    <p>📧 soporte@empresa.com</p>
+                    <p>📞 +52 55 1234 5678</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Overlay para cerrar menú móvil -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
