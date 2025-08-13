@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         setTimeout(setupAllEventListeners, 200);
         
         // Cargar estadísticas iniciales
-        setTimeout(loadInitialStats, 300);
+        setTimeout(loadInitialStats, 1000);
         
         // Validar conexión con Supabase
         validateSupabaseConnection();
