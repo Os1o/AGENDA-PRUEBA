@@ -48,11 +48,13 @@
                 <tr>
                     <th>ID</th>
                     <th>Nombre</th>
-                    <th>Descripción</th>
+                    <th>Adscripción</th>
                     <th>Categoría</th>
                     <th>Piso</th>
                     <th>Ubicación</th>
-                    <th>Descripción Corta</th>
+                    <th>Adscripcion Corta</th>
+                    <th>Edificio</th>
+                    <th>Extension</th>
                 </tr>
             </thead>
             <tbody id="empleados-body">
@@ -138,11 +140,13 @@
                     row.innerHTML = `
                         <td>${empleado.id}</td>
                         <td>${empleado.nomExt || '-'}</td>
-                        <td>${empleado.descripcion || '-'}</td>
+                        <td>${empleado.adscripcion || '-'}</td>
                         <td>${empleado.categoria || '-'}</td>
                         <td>${empleado.piso || '-'}</td>
                         <td>${empleado.ubicacion || '-'}</td>
-                        <td>${empleado.descripcionCorta || '-'}</td>
+                        <td>${empleado.adscripcionCorta || '-'}</td>
+                        <td>${empleado.edificio || '-'}</td>
+                        <td>${empleado.extension || '-'}</td>
                     `
                 })
                 
