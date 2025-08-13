@@ -45,11 +45,10 @@ async function loadInitialStats() {
         const lastUpdateElement = document.getElementById('lastUpdate');
         const serverStatusElement = document.getElementById('serverStatus');
         
-        // Cargar estadísticas desde Supabase
+        // MÉTODO CORREGIDO: obtener solo IDs y contar
         const { data: empleados, error } = await supabase
             .from('empleados')
-            .select('count(*)')
-            .single();
+            .select('id');
         
         if (error) {
             console.error('Error cargando estadísticas:', error);
@@ -57,9 +56,9 @@ async function loadInitialStats() {
             return;
         }
         
-        // Actualizar estadísticas en el UI
-        const totalCount = empleados?.count || 0;
+        const totalCount = empleados ? empleados.length : 0;
         
+        // Actualizar UI
         if (totalEmployeesElement) {
             totalEmployeesElement.textContent = totalCount;
         }
@@ -77,7 +76,6 @@ async function loadInitialStats() {
             serverStatusElement.textContent = '🟢 Conectado';
         }
         
-        // Actualizar estadísticas adicionales
         updateSystemStats(totalCount);
         
         console.log(`✅ Estadísticas cargadas: ${totalCount} empleados`);
