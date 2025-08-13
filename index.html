@@ -97,7 +97,7 @@
                 const { data: empleados, error } = await supabase
                     .from('empleados')
                     .select('*')
-                    .order('nomExt', { ascending: true })
+                    .order('id', { ascending: true })
                 
                 // Mostrar información de debugging
                 console.log('Respuesta completa:', { data: empleados, error })
