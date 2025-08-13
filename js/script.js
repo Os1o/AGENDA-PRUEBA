@@ -56,6 +56,7 @@ async function loadComponent(containerId, filePath) {
                 setupHeaderEvents();
             } else if (filePath.includes('footer')) {
                 setupFooterEvents();
+                setTimeout(loadInitialStats, 100);
             }
         } else {
             console.error(`❌ Container no encontrado: ${containerId}`);
