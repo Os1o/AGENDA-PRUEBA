@@ -47,12 +47,12 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>nomEx</th>
-                    <th>adscripcion</th>
-                    <th>categoria</th>
-                    <th>piso</th>
-                    <th>ubicacion</th>
-                    <th>extension</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Categoría</th>
+                    <th>Piso</th>
+                    <th>Ubicación</th>
+                    <th>Descripción Corta</th>
                 </tr>
             </thead>
             <tbody id="empleados-body">
@@ -115,12 +115,12 @@
                     const row = tbody.insertRow()
                     row.innerHTML = `
                         <td>${empleado.id}</td>
-                        <td>${empleado.nomEx || '-'}</td>
-                        <td>${empleado.adscripcion || '-'}</td>
+                        <td>${empleado.nomExt || '-'}</td>
+                        <td>${empleado.descripcion || '-'}</td>
                         <td>${empleado.categoria || '-'}</td>
                         <td>${empleado.piso || '-'}</td>
                         <td>${empleado.ubicacion || '-'}</td>
-                        <td>${empleado.extension || '-'}</td>
+                        <td>${empleado.descripcionCorta || '-'}</td>
                     `
                 })
                 
