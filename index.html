@@ -73,12 +73,7 @@
         console.log('SUPABASE_ANON_KEY length:', SUPABASE_ANON_KEY ? SUPABASE_ANON_KEY.length : 'VACÍA')
         console.log('SUPABASE_ANON_KEY primeros 20 chars:', SUPABASE_ANON_KEY ? SUPABASE_ANON_KEY.substring(0, 20) : 'VACÍA')
         
-        // Verificar que las credenciales estén definidas
-        if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-            document.getElementById('status').innerHTML = 
-                `<div class="error">❌ dCredenciales faltantes - revisa SUPABASE_URL y SUPABASE_ANON_KEY</div>`
-            return
-        }
+
         
         // Crear cliente de Supabase
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -86,6 +81,12 @@
         // Función para cargar empleados
         async function cargarEmpleados() {
             try {
+                // Verificar que las credenciales estén definidas
+                if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+                    document.getElementById('status').innerHTML = 
+                        `<div class="error">❌ dCredenciales faltantes - revisa SUPABASE_URL y SUPABASE_ANON_KEY</div>`
+                    return
+                }               
                 document.getElementById('status').textContent = 'Cargando empleados...'
                 
                 // DEBUGGING: Primero vamos a ver qué tablas existen
