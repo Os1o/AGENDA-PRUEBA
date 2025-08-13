@@ -18,8 +18,8 @@ const APP_CONFIG = {
 };
 
 // Configuración de Supabase
-    const SUPABASE_URL = 'https://gtogelwnsbgodwfghhku.supabase.co'
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0b2dlbHduc2Jnb2R3ZmdoaGt1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0MTk4MDcsImV4cCI6MjA2OTk5NTgwN30.HRxeUmgbT8esQ_PwMRMF3p4jI6CStRRfm5x-lvHUytw'
+const SUPABASE_URL = 'https://gtogelwnsbgodwfghhku.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0b2dlbHduc2Jnb2R3ZmdoaGt1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0MTk4MDcsImV4cCI6MjA2OTk5NTgwN30.HRxeUmgbT8esQ_PwMRMF3p4jI6CStRRfm5x-lvHUytw'
 
 // Crear cliente de Supabase
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -30,6 +30,105 @@ let allEmployees = [];
 let currentSort = 'az';
 let currentModule = '';
 let isLoading = false;
+
+// ===================================
+// FUNCIÓN DE ESTADÍSTICAS INICIALES
+// ===================================
+
+async function loadInitialStats() {
+    try {
+        console.log('Cargando estadísticas iniciales...');
+        
+        // Obtener elementos del DOM para mostrar estadísticas
+        const totalEmployeesElement = document.getElementById('totalEmployees');
+        const systemStatusElement = document.getElementById('systemStatus');
+        const lastUpdateElement = document.getElementById('lastUpdate');
+        const serverStatusElement = document.getElementById('serverStatus');
+        
+        // Cargar estadísticas desde Supabase
+        const { data: empleados, error } = await supabase
+            .from('empleados')
+            .select('count(*)')
+            .single();
+        
+        if (error) {
+            console.error('Error cargando estadísticas:', error);
+            updateStatsUI('error');
+            return;
+        }
+        
+        // Actualizar estadísticas en el UI
+        const totalCount = empleados?.count || 0;
+        
+        if (totalEmployeesElement) {
+            totalEmployeesElement.textContent = totalCount;
+        }
+        
+        if (systemStatusElement) {
+            systemStatusElement.textContent = 'Operativo';
+            systemStatusElement.className = 'status-online';
+        }
+        
+        if (lastUpdateElement) {
+            lastUpdateElement.textContent = new Date().toLocaleString();
+        }
+        
+        if (serverStatusElement) {
+            serverStatusElement.textContent = '🟢 Conectado';
+        }
+        
+        // Actualizar estadísticas adicionales
+        updateSystemStats(totalCount);
+        
+        console.log(`✅ Estadísticas cargadas: ${totalCount} empleados`);
+        
+    } catch (error) {
+        console.error('Error en loadInitialStats:', error);
+        updateStatsUI('error');
+    }
+}
+
+// Función auxiliar para actualizar estadísticas del sistema
+function updateSystemStats(totalEmployees) {
+    const statsElements = {
+        totalRecordsFooter: totalEmployees,
+        appVersion: APP_CONFIG.version,
+        currentYear: new Date().getFullYear(),
+        lastUpdated: new Date().toLocaleDateString()
+    };
+    
+    Object.keys(statsElements).forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = statsElements[id];
+        }
+    });
+    
+    if (window.performance && window.performance.memory) {
+        const memoryElement = document.getElementById('memoryUsage');
+        if (memoryElement) {
+            const memory = (window.performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(1);
+            memoryElement.textContent = `${memory} MB`;
+        }
+    }
+}
+
+// Función auxiliar para manejar errores en las estadísticas
+function updateStatsUI(status) {
+    const systemStatusElement = document.getElementById('systemStatus');
+    const serverStatusElement = document.getElementById('serverStatus');
+    
+    if (status === 'error') {
+        if (systemStatusElement) {
+            systemStatusElement.textContent = 'Error';
+            systemStatusElement.className = 'status-error';
+        }
+        
+        if (serverStatusElement) {
+            serverStatusElement.textContent = '🔴 Error de conexión';
+        }
+    }
+}
 
 // ===================================
 // SISTEMA DE INCLUDES
@@ -882,108 +981,6 @@ function exportEmployeesToCSV() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-}
-
-
-// ===================================
-// FUNCIÓN DE ESTADÍSTICAS INICIALES (FALTANTE)
-// ===================================
-
-async function loadInitialStats() {
-    try {
-        console.log('Cargando estadísticas iniciales...');
-        
-        // Obtener elementos del DOM para mostrar estadísticas
-        const totalEmployeesElement = document.getElementById('totalEmployees');
-        const systemStatusElement = document.getElementById('systemStatus');
-        const lastUpdateElement = document.getElementById('lastUpdate');
-        const serverStatusElement = document.getElementById('serverStatus');
-        
-        // Cargar estadísticas desde Supabase
-        const { data: empleados, error } = await supabase
-            .from('empleados')
-            .select('count(*)')
-            .single();
-        
-        if (error) {
-            console.error('Error cargando estadísticas:', error);
-            updateStatsUI('error');
-            return;
-        }
-        
-        // Actualizar estadísticas en el UI
-        const totalCount = empleados?.count || 0;
-        
-        if (totalEmployeesElement) {
-            totalEmployeesElement.textContent = totalCount;
-        }
-        
-        if (systemStatusElement) {
-            systemStatusElement.textContent = 'Operativo';
-            systemStatusElement.className = 'status-online';
-        }
-        
-        if (lastUpdateElement) {
-            lastUpdateElement.textContent = new Date().toLocaleString();
-        }
-        
-        if (serverStatusElement) {
-            serverStatusElement.textContent = '🟢 Conectado';
-        }
-        
-        // Actualizar estadísticas adicionales
-        updateSystemStats(totalCount);
-        
-        console.log(`✅ Estadísticas cargadas: ${totalCount} empleados`);
-        
-    } catch (error) {
-        console.error('Error en loadInitialStats:', error);
-        updateStatsUI('error');
-    }
-}
-
-// Función auxiliar para actualizar estadísticas del sistema
-function updateSystemStats(totalEmployees) {
-    // Actualizar contadores en el footer o widgets de estado
-    const statsElements = {
-        totalRecordsFooter: totalEmployees,
-        appVersion: APP_CONFIG.version,
-        currentYear: new Date().getFullYear(),
-        lastUpdated: new Date().toLocaleDateString()
-    };
-    
-    Object.keys(statsElements).forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.textContent = statsElements[id];
-        }
-    });
-    
-    // Actualizar memoria y rendimiento (opcional)
-    if (window.performance && window.performance.memory) {
-        const memoryElement = document.getElementById('memoryUsage');
-        if (memoryElement) {
-            const memory = (window.performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(1);
-            memoryElement.textContent = `${memory} MB`;
-        }
-    }
-}
-
-// Función auxiliar para manejar errores en las estadísticas
-function updateStatsUI(status) {
-    const systemStatusElement = document.getElementById('systemStatus');
-    const serverStatusElement = document.getElementById('serverStatus');
-    
-    if (status === 'error') {
-        if (systemStatusElement) {
-            systemStatusElement.textContent = 'Error';
-            systemStatusElement.className = 'status-error';
-        }
-        
-        if (serverStatusElement) {
-            serverStatusElement.textContent = '🔴 Error de conexión';
-        }
-    }
 }
 
 // ===================================
