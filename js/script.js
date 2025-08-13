@@ -106,8 +106,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     try {
         // Cargar componentes del sistema
-        await loadComponent('header-container', 'includes/header.html');
-        await loadComponent('footer-container', 'includes/footer.html');
+        await loadComponent('header-container', 'includes/header.php');
+        await loadComponent('footer-container', 'includes/footer.php');
         
         // Actualizar información dinámica
         updateDynamicInfo();
