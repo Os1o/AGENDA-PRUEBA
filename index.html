@@ -64,13 +64,21 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
-        // ⚠️ REEMPLAZA ESTOS VALORES CON LOS TUYOS
+        // Credenciales directas (reemplaza con las tuyas)
         const SUPABASE_URL = 'https://gtogelwnsbgodwfghhku.supabase.co'
-        const SUPABASE_ANON_KEY = 'TeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0b2dlbHduc2Jnb2R3ZmdoaGt1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0MTk4MDcsImV4cCI6MjA2OTk5NTgwN30.HRxeUmgbT8esQ_PwMRMF3p4jI6CStRRfm5x-lvHUytw'
+        const SUPABASE_ANON_KEY = 'PEGA_TU_ANON_KEY_COMPLETA_AQUI'
         
-        // Si estás usando Netlify con variables de entorno, usa esto en su lugar:
-        // const SUPABASE_URL = process.env.SUPABASE_URL
-        // const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY
+        // DEBUGGING: Verificar que las credenciales no estén vacías
+        console.log('SUPABASE_URL:', SUPABASE_URL)
+        console.log('SUPABASE_ANON_KEY length:', SUPABASE_ANON_KEY ? SUPABASE_ANON_KEY.length : 'VACÍA')
+        console.log('SUPABASE_ANON_KEY primeros 20 chars:', SUPABASE_ANON_KEY ? SUPABASE_ANON_KEY.substring(0, 20) : 'VACÍA')
+        
+        // Verificar que las credenciales estén definidas
+        if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+            document.getElementById('status').innerHTML = 
+                `<div class="error">❌ dCredenciales faltantes - revisa SUPABASE_URL y SUPABASE_ANON_KEY</div>`
+            return
+        }
         
         // Crear cliente de Supabase
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
