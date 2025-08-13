@@ -532,7 +532,7 @@ async function validateSupabaseConnection() {
     try {
         const { data, error } = await supabase
             .from('empleados')
-            .select('count(*)')
+            .select('id')
             .limit(1);
 
         if (error) {
