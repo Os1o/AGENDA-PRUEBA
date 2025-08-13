@@ -7,6 +7,16 @@
 // CONFIGURACIÓN GLOBAL
 // ===================================
 
+// Variables del sistema
+const APP_CONFIG = {
+    name: 'Directorio Empresarial',
+    version: '1.2.0',
+    description: 'Sistema integral de gestión de personal - Dirección Jurídica',
+    company: 'Dirección Jurídica',
+    email: 'soporte@empresa.com',
+    phone: '+52 55 1234 5678'
+};
+
 // Configuración de Supabase
     const SUPABASE_URL = 'https://gtogelwnsbgodwfghhku.supabase.co'
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0b2dlbHduc2Jnb2R3ZmdoaGt1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0MTk4MDcsImV4cCI6MjA2OTk5NTgwN30.HRxeUmgbT8esQ_PwMRMF3p4jI6CStRRfm5x-lvHUytw'
@@ -22,25 +32,377 @@ let currentModule = '';
 let isLoading = false;
 
 // ===================================
-// INICIALIZACIÓN
+// SISTEMA DE INCLUDES
 // ===================================
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Directorio Empresarial iniciado');
-    initializeApp();
-});
+// Función para cargar componentes
+async function loadComponent(containerId, filePath) {
+    try {
+        const response = await fetch(filePath);
+        
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        
+        const html = await response.text();
+        const container = document.getElementById(containerId);
+        
+        if (container) {
+            container.innerHTML = html;
+            console.log(`✅ Componente cargado: ${filePath}`);
+            
+            // Ejecutar scripts específicos después de cargar el componente
+            if (filePath.includes('header')) {
+                setupHeaderEvents();
+            } else if (filePath.includes('footer')) {
+                setupFooterEvents();
+            }
+        } else {
+            console.error(`❌ Container no encontrado: ${containerId}`);
+        }
+    } catch (error) {
+        console.error(`❌ Error cargando ${filePath}:`, error);
+        
+        // Mostrar error en el container
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = `
+                <div class="error" style="text-align: center; padding: 1rem; border-radius: 8px;">
+                    ⚠️ Error cargando ${filePath}<br>
+                    <small>Verifique que el archivo existe</small>
+                </div>
+            `;
+        }
+    }
+}
 
-function initializeApp() {
-    setupEventListeners();
-    validateSupabaseConnection();
+// Actualizar información dinámica después de cargar includes
+function updateDynamicInfo() {
+    // Actualizar año actual
+    const yearElements = document.querySelectorAll('#currentYear, .current-year');
+    yearElements.forEach(el => {
+        if (el) el.textContent = new Date().getFullYear();
+    });
+    
+    // Actualizar fecha de última actualización
+    const updateElements = document.querySelectorAll('#lastUpdated, .last-updated');
+    updateElements.forEach(el => {
+        if (el) el.textContent = new Date().toLocaleDateString();
+    });
+    
+    // Actualizar nombre del servidor
+    const serverElements = document.querySelectorAll('#serverName, .server-name');
+    serverElements.forEach(el => {
+        if (el) el.textContent = window.location.hostname;
+    });
 }
 
 // ===================================
-// CONFIGURACIÓN DE EVENTOS
+// INICIALIZACIÓN DE LA APLICACIÓN
 // ===================================
 
-function setupEventListeners() {
-    // Búsqueda en tiempo real con debounce
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log(APP_CONFIG.name + ' v' + APP_CONFIG.version + ' iniciando...');
+    
+    try {
+        // Cargar componentes del sistema
+        await loadComponent('header-container', 'includes/header.html');
+        await loadComponent('footer-container', 'includes/footer.html');
+        
+        // Actualizar información dinámica
+        updateDynamicInfo();
+        
+        // Configurar eventos una vez que todo esté cargado
+        setTimeout(setupAllEventListeners, 200);
+        
+        // Cargar estadísticas iniciales
+        setTimeout(loadInitialStats, 300);
+        
+        // Validar conexión con Supabase
+        validateSupabaseConnection();
+        
+        console.log('✅ Aplicación inicializada correctamente');
+        
+    } catch (error) {
+        console.error('❌ Error durante la inicialización:', error);
+    }
+});
+
+function initializeApp() {
+    // Esta función se mantiene para compatibilidad
+    console.log('Función initializeApp() ya no es necesaria - la inicialización es automática');
+}
+
+// ===================================
+// FUNCIONES DEL HEADER
+// ===================================
+
+// Toggle del menú móvil
+function toggleMobileMenu() {
+    const mobileNav = document.getElementById('mobileNav');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    const body = document.body;
+    
+    if (mobileNav && mobileOverlay) {
+        const isOpen = mobileNav.classList.contains('open');
+        
+        if (isOpen) {
+            closeMobileMenu();
+        } else {
+            mobileNav.classList.add('open');
+            mobileOverlay.classList.add('active');
+            body.classList.add('mobile-menu-open');
+        }
+    }
+}
+
+// Cerrar menú móvil
+function closeMobileMenu() {
+    const mobileNav = document.getElementById('mobileNav');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    const body = document.body;
+    
+    if (mobileNav && mobileOverlay) {
+        mobileNav.classList.remove('open');
+        mobileOverlay.classList.remove('active');
+        body.classList.remove('mobile-menu-open');
+    }
+}
+
+// Toggle de búsqueda rápida
+function toggleQuickSearch() {
+    const quickSearch = document.getElementById('quickSearch');
+    const searchInput = document.getElementById('quickSearchInput');
+    
+    if (quickSearch) {
+        const isVisible = quickSearch.style.display !== 'none';
+        
+        if (isVisible) {
+            quickSearch.style.display = 'none';
+        } else {
+            quickSearch.style.display = 'flex';
+            if (searchInput) {
+                searchInput.focus();
+            }
+        }
+    }
+}
+
+// Búsqueda rápida
+function quickSearch() {
+    const searchInput = document.getElementById('quickSearchInput');
+    if (searchInput && searchInput.value.trim() !== '') {
+        const searchTerm = searchInput.value.trim();
+        
+        // Si estamos en la página del directorio, hacer búsqueda directa
+        if (typeof searchEmployees === 'function') {
+            const mainSearchInput = document.getElementById('searchInput');
+            if (mainSearchInput) {
+                mainSearchInput.value = searchTerm;
+                searchEmployees();
+            }
+        }
+        
+        // Cerrar búsqueda rápida
+        toggleQuickSearch();
+    }
+}
+
+// ===================================
+// FUNCIONES DEL FOOTER
+// ===================================
+
+// Función para subir al inicio
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+// Cambiar tema (claro/oscuro)
+function toggleTheme() {
+    const body = document.body;
+    const currentTheme = body.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    if (typeof showNotification === 'function') {
+        showNotification(
+            `Tema cambiado a ${newTheme === 'dark' ? 'oscuro' : 'claro'}`,
+            'info'
+        );
+    }
+}
+
+// Imprimir página
+function printPage() {
+    // Ocultar elementos no necesarios para impresión
+    const elementsToHide = ['.navbar', '.footer', '.modal-overlay', '.system-status-widget'];
+    elementsToHide.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(el => el.style.display = 'none');
+    });
+    
+    window.print();
+    
+    // Restaurar elementos después de imprimir
+    setTimeout(() => {
+        elementsToHide.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(el => el.style.display = '');
+        });
+    }, 1000);
+}
+
+// Mostrar ayuda
+function showHelp() {
+    const helpModal = document.getElementById('helpModal');
+    if (helpModal) {
+        helpModal.style.display = 'flex';
+    }
+}
+
+// Mostrar manual
+function showManual() {
+    showNotification('Abriendo manual de usuario...', 'info');
+    setTimeout(() => {
+        showNotification('Manual disponible en el portal de empleados', 'success');
+    }, 1500);
+}
+
+// Reportar problema
+function reportIssue() {
+    const userAgent = navigator.userAgent;
+    const currentPage = window.location.pathname;
+    const timestamp = new Date().toISOString();
+    
+    const issueData = {
+        page: currentPage,
+        userAgent: userAgent,
+        timestamp: timestamp,
+        url: window.location.href,
+        appVersion: APP_CONFIG.version
+    };
+    
+    console.log('Datos del reporte:', issueData);
+    showNotification('Reporte enviado al equipo de soporte', 'success');
+}
+
+// Mostrar changelog
+function showChangelog() {
+    showNotification(`Versión ${APP_CONFIG.version} - Últimas mejoras cargadas`, 'info');
+}
+
+// Descargar respaldo
+function downloadBackup() {
+    if (typeof exportEmployeesToCSV === 'function') {
+        exportEmployeesToCSV();
+        showNotification('Respaldo descargado exitosamente', 'success');
+    } else {
+        showNotification('Función de respaldo no disponible en esta página', 'warning');
+    }
+}
+
+// Cerrar modal
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function setupAllEventListeners() {
+    console.log('Configurando event listeners...');
+    
+    // Event listeners del header
+    setupHeaderEvents();
+    
+    // Event listeners del footer  
+    setupFooterEvents();
+    
+    // Event listeners generales
+    setupGeneralEvents();
+    
+    // Event listeners del directorio
+    setupDirectoryEvents();
+}
+
+function setupHeaderEvents() {
+    // Búsqueda rápida en header
+    const quickSearchInput = document.getElementById('quickSearchInput');
+    if (quickSearchInput) {
+        quickSearchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                quickSearch();
+            }
+        });
+    }
+    
+    // Menú móvil
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    if (mobileOverlay) {
+        mobileOverlay.addEventListener('click', closeMobileMenu);
+    }
+}
+
+function setupFooterEvents() {
+    // Toggle del widget de estado
+    const widget = document.getElementById('systemStatusWidget');
+    const details = document.getElementById('statusDetails');
+    
+    if (widget && details) {
+        widget.addEventListener('click', function() {
+            const isVisible = details.style.display !== 'none';
+            details.style.display = isVisible ? 'none' : 'block';
+        });
+    }
+    
+    // Actualizar estadísticas cada 5 minutos
+    setInterval(loadInitialStats, 5 * 60 * 1000);
+    
+    // Cargar tema guardado
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        document.body.setAttribute('data-theme', savedTheme);
+    }
+}
+
+function setupGeneralEvents() {
+    // Navegación con teclado
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            // Cerrar directorio
+            const directoryPage = document.getElementById('directoryPage');
+            if (directoryPage && directoryPage.style.display !== 'none') {
+                showMain();
+            }
+            
+            // Cerrar búsqueda rápida
+            const quickSearch = document.getElementById('quickSearch');
+            if (quickSearch && quickSearch.style.display !== 'none') {
+                toggleQuickSearch();
+            }
+            
+            // Cerrar menú móvil
+            closeMobileMenu();
+            
+            // Cerrar modales
+            const modals = document.querySelectorAll('.modal-overlay');
+            modals.forEach(modal => modal.style.display = 'none');
+        }
+    });
+    
+    // Prevenir submit en formularios
+    document.addEventListener('submit', function(e) {
+        e.preventDefault();
+    });
+}
+
+function setupDirectoryEvents() {
+    // Búsqueda en tiempo real
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         let searchTimeout;
@@ -51,28 +413,17 @@ function setupEventListeners() {
             }, 300);
         });
 
-        // Búsqueda al presionar Enter
         searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 searchEmployees();
             }
         });
     }
+}
 
-    // Navegación con teclado
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const directoryPage = document.getElementById('directoryPage');
-            if (directoryPage && directoryPage.style.display !== 'none') {
-                showMain();
-            }
-        }
-    });
-
-    // Prevenir submit en formularios
-    document.addEventListener('submit', function(e) {
-        e.preventDefault();
-    });
+function setupEventListeners() {
+    // Función legacy - ahora usa setupAllEventListeners()
+    setupAllEventListeners();
 }
 
 // ===================================
@@ -143,8 +494,30 @@ function showContent() {
 }
 
 // ===================================
-// CARGA DE DATOS DESDE SUPABASE
+// SISTEMA DE NOTIFICACIONES
 // ===================================
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <span class="notification-message">${message}</span>
+        <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+    `;
+    
+    // Insertar después del navbar
+    const navbar = document.querySelector('.navbar');
+    if (navbar && navbar.parentNode) {
+        navbar.parentNode.insertBefore(notification, navbar.nextSibling);
+        
+        // Auto-remove después de 5 segundos
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+}
 
 async function loadEmployeesFromSupabase() {
     if (isLoading) return;
