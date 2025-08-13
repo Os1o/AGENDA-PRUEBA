@@ -84,7 +84,7 @@
                 const { data: empleados, error } = await supabase
                     .from('empleados')
                     .select('*')
-                    .order('nombre', { ascending: true })
+                    .order('nomExt', { ascending: true })
                 
                 if (error) {
                     throw error
