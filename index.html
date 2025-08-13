@@ -60,13 +60,13 @@
         </table>
     </div>
 
-    <!-- Supabase CDN PRUEBA-->
+    <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
         // ⚠️ REEMPLAZA ESTOS VALORES CON LOS TUYOS
         const SUPABASE_URL = 'https://gtogelwnsbgodwfghhku.supabase.co'
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0b2dlbHduc2Jnb2R3ZmdoaGt1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0MTk4MDcsImV4cCI6MjA2OTk5NTgwN30.HRxeUmgbT8esQ_PwMRMF3p4jI6CStRRfm5x-lvHUytw'
+        const SUPABASE_ANON_KEY = 'TeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0b2dlbHduc2Jnb2R3ZmdoaGt1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0MTk4MDcsImV4cCI6MjA2OTk5NTgwN30.HRxeUmgbT8esQ_PwMRMF3p4jI6CStRRfm5x-lvHUytw'
         
         // Si estás usando Netlify con variables de entorno, usa esto en su lugar:
         // const SUPABASE_URL = process.env.SUPABASE_URL
@@ -80,23 +80,36 @@
             try {
                 document.getElementById('status').textContent = 'Cargando empleados...'
                 
+                // DEBUGGING: Primero vamos a ver qué tablas existen
+                console.log('URL de Supabase:', SUPABASE_URL)
+                console.log('Intentando conectar...')
+                
                 // Consultar tabla de empleados
                 const { data: empleados, error } = await supabase
                     .from('empleados')
                     .select('*')
                     .order('nomExt', { ascending: true })
                 
+                // Mostrar información de debugging
+                console.log('Respuesta completa:', { data: empleados, error })
+                
                 if (error) {
+                    console.error('Error detallado:', error)
                     throw error
                 }
+                
+                console.log('Empleados encontrados:', empleados)
                 
                 // Mostrar resultados
                 mostrarEmpleados(empleados)
                 
             } catch (error) {
-                console.error('Error:', error)
+                console.error('Error completo:', error)
                 document.getElementById('status').innerHTML = 
-                    `<div class="error">Error al conectar: ${error.message}</div>`
+                    `<div class="error">
+                        Error al conectar: ${error.message}<br>
+                        <small>Revisa la consola del navegador (F12) para más detalles</small>
+                    </div>`
             }
         }
         
