@@ -700,7 +700,14 @@ function showDirectory(module) {
     if (mainPage) mainPage.style.display = 'none';
     if (directoryPage) directoryPage.style.display = 'block';
     
-
+    // Actualizar estado del menú
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach(link => link.classList.remove('active'));
+    
+    const directoryLink = document.querySelector('.nav-links a[onclick*="showDirectory"]');
+    if (directoryLink) {
+        directoryLink.classList.add('active');
+    }
     
     // Actualizar título según el módulo
     const titles = {
@@ -730,6 +737,15 @@ function showMain() {
     if (mainPage) mainPage.style.display = 'block';
     if (directoryPage) directoryPage.style.display = 'none';
     
+    // AGREGAR después de mostrar las páginas:
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach(link => link.classList.remove('active'));
+    
+    const homeLink = document.querySelector('.nav-links a[href="index.html"]');
+    if (homeLink) {
+        homeLink.classList.add('active');
+    }
+        
     // Limpiar búsqueda
     const searchInput = document.getElementById('searchInput');
     if (searchInput) searchInput.value = '';
