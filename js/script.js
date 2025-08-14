@@ -902,7 +902,7 @@ function showEmployeeDetails(employee) {
                         <span>${employee.floor} - ${employee.ubicacion}</span>
                     </div>                                                          
                     <div class="modal-header">
-                        <label>Extensión:</label>
+                        <h4>Extensión:</h4>
                         <span>${employee.extension}</span>
                     </div>
                 </div>
