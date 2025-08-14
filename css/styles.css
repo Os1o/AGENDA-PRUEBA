@@ -5,13 +5,6 @@
 
 /* Reset y configuración base */
 
-/* TEST: Ocultar todo el menú móvil */
-.mobile-nav,
-.mobile-nav-content,
-.mobile-nav-info {
-    display: none !important;
-}
-
 * {
     margin: 0;
     padding: 0;
