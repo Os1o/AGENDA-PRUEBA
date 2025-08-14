@@ -50,7 +50,8 @@ async function loadInitialStats() {
 
         // 🎯 AGREGAR: Los dos elementos que faltan
         const lastSync = document.getElementById('lastSync');
-        const performance = document.getElementById('performance');        
+        const performance = document.getElementById('performance');
+        const statusDot = document.getElementById('statusDot');        
         
         // MÉTODO CORREGIDO: obtener solo IDs y contar
         const { data: empleados, error } = await supabase
@@ -745,7 +746,7 @@ function showMain() {
     if (homeLink) {
         homeLink.classList.add('active');
     }
-        
+
     // Limpiar búsqueda
     const searchInput = document.getElementById('searchInput');
     if (searchInput) searchInput.value = '';
