@@ -821,6 +821,7 @@ function searchEmployees() {
             employee.adscripcionCorta.toLowerCase().includes(searchTerm) ||
             employee.categoria.toLowerCase().includes(searchTerm) ||
             employee.adscripcion.toLowerCase().includes(searchTerm) ||
+            employee.edificio.toLowerCase().includes(searchTerm) ||
             employee.ubicacion.toLowerCase().includes(searchTerm)
         );
     }
