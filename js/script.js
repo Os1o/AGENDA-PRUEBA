@@ -901,7 +901,7 @@ function showEmployeeDetails(employee) {
                         <label>Ubicación:</label>
                         <span>${employee.floor} - ${employee.ubicacion}</span>
                     </div>                                                          
-                    <div class="detail-item">
+                    <div class="modal-header">
                         <label>Extensión:</label>
                         <span>${employee.extension}</span>
                     </div>
