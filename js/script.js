@@ -641,9 +641,9 @@ async function loadEmployeesFromSupabase() {
             name: emp.nomExt || 'Sin nombre',
             extension: emp.extension?.toString() || 'Sin ID',
             floor: emp.piso ? `Piso ${emp.piso}` : 'Sin ubicación',
-            office: emp.descripcionCorta || emp.ubicacion || 'N/A',
+            adscripcionCorta: emp.adscripcionCorta || emp.ubicacion || 'N/A',
             categoria: emp.categoria || 'Sin categoría',
-            descripcion: emp.descripcion || 'Sin descripción',
+            adscripcion: emp.adscripcion || 'Sin adscripcion',
             ubicacion: emp.ubicacion || 'Sin ubicación'
         }));
         
@@ -759,11 +759,11 @@ function createEmployeeCard(employee, index) {
                         <span>${employee.extension}</span>
                     </div>
                     <span style="color: #95a5a6;">|</span>
-                    <span title="${employee.descripcion}">${truncateText(employee.descripcion, 30)}</span>
+                    <span title="${employee.adscripcion}">${truncateText(employee.adscripcion, 30)}</span>
                 </div>
             </div>
         </div>
-        <div class="office-badge">${employee.office}</div>
+        <div class="office-badge">${employee.adscripcionCorta}</div>
     `;
     
     // Agregar evento click para detalles (opcional)
@@ -817,9 +817,9 @@ function searchEmployees() {
             employee.name.toLowerCase().includes(searchTerm) ||
             employee.extension.includes(searchTerm) ||
             employee.floor.toLowerCase().includes(searchTerm) ||
-            employee.office.toLowerCase().includes(searchTerm) ||
+            employee.adscripcionCorta.toLowerCase().includes(searchTerm) ||
             employee.categoria.toLowerCase().includes(searchTerm) ||
-            employee.descripcion.toLowerCase().includes(searchTerm) ||
+            employee.adscripcion.toLowerCase().includes(searchTerm) ||
             employee.ubicacion.toLowerCase().includes(searchTerm)
         );
     }
@@ -895,7 +895,7 @@ function showEmployeeDetails(employee) {
                     </div>
                     <div class="detail-item">
                         <label>Descripción:</label>
-                        <span>${employee.descripcion}</span>
+                        <span>${employee.adscripcion}</span>
                     </div>
                     <div class="detail-item">
                         <label>Categoría:</label>
@@ -907,7 +907,7 @@ function showEmployeeDetails(employee) {
                     </div>
                     <div class="detail-item">
                         <label>Oficina:</label>
-                        <span>${employee.office}</span>
+                        <span>${employee.adscripcionCorta}</span>
                     </div>
                 </div>
             </div>
@@ -962,11 +962,11 @@ function exportEmployeesToCSV() {
         ...currentEmployees.map(emp => [
             `"${emp.name}"`,
             emp.id,
-            `"${emp.descripcion}"`,
+            `"${emp.adscripcion}"`,
             `"${emp.categoria}"`,
             `"${emp.floor}"`,
             `"${emp.ubicacion}"`,
-            `"${emp.office}"`
+            `"${emp.adscripcionCorta}"`
         ].join(','))
     ].join('\n');
 
