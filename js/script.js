@@ -700,8 +700,8 @@ function showDirectory(module) {
     if (mainPage) mainPage.style.display = 'none';
     if (directoryPage) directoryPage.style.display = 'block';
     
-    updateActiveMenuLink('directorio');
 
+    
     // Actualizar título según el módulo
     const titles = {
         'ubicacion': 'Directorio por Ubicación',
