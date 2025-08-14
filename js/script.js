@@ -880,13 +880,13 @@ function showEmployeeDetails(employee) {
     modal.innerHTML = `
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Detalles del Empleado</h3>
+                <h3>Detalles del Trabajador</h3>
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="employee-detail-grid">
                     <div class="detail-item">
-                        <label>Nombre Completo:</label>
+                        <label>Nombre:</label>
                         <span>${employee.name}</span>
                     </div>
                     <div class="detail-item">
@@ -894,16 +894,16 @@ function showEmployeeDetails(employee) {
                         <span>${employee.categoria}</span>
                     </div>
                     <div class="detail-item">
-                        <label>Descripción:</label>
+                        <label>Adscripción:</label>
                         <span>${employee.adscripcion}</span>
-                    </div>                                        
-                    <div class="detail-item">
-                        <label>ID:</label>
-                        <span>${employee.extension}</span>
-                    </div>
+                    </div>  
                     <div class="detail-item">
                         <label>Ubicación:</label>
                         <span>${employee.floor} - ${employee.ubicacion}</span>
+                    </div>                                                          
+                    <div class="detail-item">
+                        <label>Extensión:</label>
+                        <span>${employee.extension}</span>
                     </div>
                 </div>
             </div>
