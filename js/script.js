@@ -641,9 +641,10 @@ async function loadEmployeesFromSupabase() {
             name: emp.nomExt || 'Sin nombre',
             extension: emp.extension?.toString() || 'Sin ID',
             floor: emp.piso ? `Piso ${emp.piso}` : 'Sin ubicación',
-            adscripcionCorta: emp.adscripcionCorta || emp.ubicacion || 'N/A',
+            edificio: emp.edificio || emp.ubicacion || 'N/A',
             categoria: emp.categoria || 'Sin categoría',
             adscripcion: emp.adscripcion || 'Sin adscripcion',
+            adscripcionCorta: emp.adscripcionCorta || 'Sin adscripcion',
             ubicacion: emp.ubicacion || 'Sin ubicación'
         }));
         
@@ -763,7 +764,7 @@ function createEmployeeCard(employee, index) {
                 </div>
             </div>
         </div>
-        <div class="office-badge">${employee.adscripcionCorta}</div>
+        <div class="office-badge">${employee.edificio}</div>
     `;
     
     // Agregar evento click para detalles (opcional)
