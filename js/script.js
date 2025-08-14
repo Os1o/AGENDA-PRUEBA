@@ -755,7 +755,7 @@ function createEmployeeCard(employee, index) {
                 <div class="employee-name">${employee.name}</div>
                 <div class="employee-details">
                     <div class="employee-id">
-                        <span>🆔</span>
+                        <span>📞</span>
                         <span>${employee.extension}</span>
                     </div>
                     <span style="color: #95a5a6;">|</span>
@@ -890,30 +890,26 @@ function showEmployeeDetails(employee) {
                         <span>${employee.name}</span>
                     </div>
                     <div class="detail-item">
-                        <label>ID:</label>
-                        <span>${employee.extension}</span>
+                        <label>Categoría:</label>
+                        <span>${employee.categoria}</span>
                     </div>
                     <div class="detail-item">
                         <label>Descripción:</label>
                         <span>${employee.adscripcion}</span>
-                    </div>
+                    </div>                                        
                     <div class="detail-item">
-                        <label>Categoría:</label>
-                        <span>${employee.categoria}</span>
+                        <label>ID:</label>
+                        <span>${employee.extension}</span>
                     </div>
                     <div class="detail-item">
                         <label>Ubicación:</label>
                         <span>${employee.floor} - ${employee.ubicacion}</span>
                     </div>
-                    <div class="detail-item">
-                        <label>Oficina:</label>
-                        <span>${employee.adscripcionCorta}</span>
-                    </div>
                 </div>
             </div>
-            <div class="modal-footer">
+<!--       <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal()">Cerrar</button>
-            </div>
+            </div>-->
         </div>
     `;
     
