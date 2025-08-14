@@ -639,7 +639,7 @@ async function loadEmployeesFromSupabase() {
         // Mapear datos de Supabase al formato esperado
         allEmployees = empleados.map(emp => ({
             name: emp.nomExt || 'Sin nombre',
-            id: emp.extension?.toString() || 'Sin ID',
+            extension: emp.extension?.toString() || 'Sin ID',
             floor: emp.piso ? `Piso ${emp.piso}` : 'Sin ubicación',
             office: emp.descripcionCorta || emp.ubicacion || 'N/A',
             categoria: emp.categoria || 'Sin categoría',
