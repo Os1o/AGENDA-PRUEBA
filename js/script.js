@@ -38,17 +38,27 @@ let isLoading = false;
 async function loadInitialStats() {
     try {
         console.log('Cargando estadísticas iniciales...');
+
+        // 🕐 AGREGAR: Marcar tiempo de inicio (para medir rendimiento)
+        const startTime = Date.now();
         
         // Obtener elementos del DOM para mostrar estadísticas
         const totalEmployeesElement = document.getElementById('totalEmployees');
         const systemStatusElement = document.getElementById('systemStatus');
         const lastUpdateElement = document.getElementById('lastUpdate');
         const serverStatusElement = document.getElementById('serverStatus');
+
+        // 🎯 AGREGAR: Los dos elementos que faltan
+        const lastSync = document.getElementById('lastSync');
+        const performance = document.getElementById('performance');        
         
         // MÉTODO CORREGIDO: obtener solo IDs y contar
         const { data: empleados, error } = await supabase
             .from('empleados')
             .select('id');
+
+        // 📊 AGREGAR: Calcular tiempo de respuesta
+        const responseTime = Date.now() - startTime;
         
         if (error) {
             console.error('Error cargando estadísticas:', error);
@@ -75,7 +85,21 @@ async function loadInitialStats() {
         if (serverStatusElement) {
             serverStatusElement.textContent = '🟢 Conectado';
         }
+
+        if (statusDot) {
+            statusDot.style.backgroundColor = '#00b894';
+            statusDot.style.boxShadow = '0 0 10px rgba(0, 184, 148, 0.5)';
+        }
         
+        // 🎯 AGREGAR: Las dos líneas que faltan
+        if (lastSync) {
+            lastSync.textContent = new Date().toLocaleTimeString();
+        }
+        
+        if (performance) {
+            performance.textContent = `${responseTime}ms`;
+        }
+
         updateSystemStats(totalCount);
         
         console.log(`✅ Estadísticas cargadas: ${totalCount} empleados`);
