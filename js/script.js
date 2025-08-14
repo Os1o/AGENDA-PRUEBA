@@ -760,11 +760,11 @@ function createEmployeeCard(employee, index) {
                         <span>${employee.extension}</span>
                     </div>
                     <span style="color: #95a5a6;">|</span>
-                    <span title="${employee.adscripcion}">${truncateText(employee.adscripcion, 30)}</span>
+                    <span title="${employee.edificio}">${truncateText(employee.edificio, 30)}</span>
                 </div>
             </div>
         </div>
-        <div class="office-badge">${employee.edificio}</div>
+        <div class="office-badge">${employee.adscripcionCorta}</div>
     `;
     
     // Agregar evento click para detalles (opcional)
