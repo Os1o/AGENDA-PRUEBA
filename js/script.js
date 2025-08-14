@@ -903,7 +903,7 @@ function showEmployeeDetails(employee) {
                     </div>                                                          
                     <div class="modal-header">
                         <h4>Extensión:</h4>
-                        <span>${employee.extension}</span>
+                        <strong>${employee.extension}</strong>
                     </div>
                 </div>
             </div>
