@@ -639,7 +639,7 @@ async function loadEmployeesFromSupabase() {
         // Mapear datos de Supabase al formato esperado
         allEmployees = empleados.map(emp => ({
             name: emp.nomExt || 'Sin nombre',
-            id: emp.id?.toString() || 'Sin ID',
+            id: emp.extension?.toString() || 'Sin ID',
             floor: emp.piso ? `Piso ${emp.piso}` : 'Sin ubicación',
             office: emp.descripcionCorta || emp.ubicacion || 'N/A',
             categoria: emp.categoria || 'Sin categoría',
@@ -756,7 +756,7 @@ function createEmployeeCard(employee, index) {
                 <div class="employee-details">
                     <div class="employee-id">
                         <span>🆔</span>
-                        <span>${employee.id}</span>
+                        <span>${employee.extension}</span>
                     </div>
                     <span style="color: #95a5a6;">|</span>
                     <span title="${employee.descripcion}">${truncateText(employee.descripcion, 30)}</span>
@@ -815,7 +815,7 @@ function searchEmployees() {
     } else {
         currentEmployees = allEmployees.filter(employee => 
             employee.name.toLowerCase().includes(searchTerm) ||
-            employee.id.includes(searchTerm) ||
+            employee.extension.includes(searchTerm) ||
             employee.floor.toLowerCase().includes(searchTerm) ||
             employee.office.toLowerCase().includes(searchTerm) ||
             employee.categoria.toLowerCase().includes(searchTerm) ||
@@ -891,7 +891,7 @@ function showEmployeeDetails(employee) {
                     </div>
                     <div class="detail-item">
                         <label>ID:</label>
-                        <span>${employee.id}</span>
+                        <span>${employee.extension}</span>
                     </div>
                     <div class="detail-item">
                         <label>Descripción:</label>
@@ -956,7 +956,7 @@ function exportEmployeesToCSV() {
         return;
     }
 
-    const headers = ['Nombre', 'ID', 'Descripción', 'Categoría', 'Piso', 'Ubicación', 'Oficina'];
+    const headers = ['Nombre', 'Extension', 'Descripción', 'Categoría', 'Piso', 'Ubicación', 'Oficina'];
     const csvContent = [
         headers.join(','),
         ...currentEmployees.map(emp => [
