@@ -90,7 +90,7 @@ async function loadInitialStats() {
             statusDot.style.backgroundColor = '#00b894';
             statusDot.style.boxShadow = '0 0 10px rgba(0, 184, 148, 0.5)';
         }
-        
+
         // 🎯 AGREGAR: Las dos líneas que faltan
         if (lastSync) {
             lastSync.textContent = new Date().toLocaleTimeString();
@@ -700,6 +700,8 @@ function showDirectory(module) {
     if (mainPage) mainPage.style.display = 'none';
     if (directoryPage) directoryPage.style.display = 'block';
     
+    updateActiveMenuLink('directorio');
+
     // Actualizar título según el módulo
     const titles = {
         'ubicacion': 'Directorio por Ubicación',
