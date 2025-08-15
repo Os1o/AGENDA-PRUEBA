@@ -398,7 +398,7 @@ function showManual() {
         
         // Mostrar segunda notificación
         showNotification('Manual disponible en el portal de empleados', 'success');
-    }, 2000);
+    }, 4000);
 }
 
 // Reportar problema
