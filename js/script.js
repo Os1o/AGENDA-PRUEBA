@@ -1780,6 +1780,361 @@ function updateBackButtonText() {
 
 
 
+
+// ===================================
+// SISTEMA DE CATEGORÍAS
+// ===================================
+
+// Variables globales para categorías
+let allCategories = [];
+let currentCategory = '';
+let currentCategoryEmployees = [];
+
+// Función para cargar y agrupar empleados por categorías
+async function loadCategoriasFromSupabase() {
+    try {
+        console.log('Cargando categorías...');
+        
+        // Obtener todos los empleados
+        const { data: empleados, error } = await supabase
+            .from('empleados')
+            .select('*');
+        
+        if (error) {
+            throw new Error(`Error cargando empleados: ${error.message}`);
+        }
+
+        // Separar empleados por categoría (con datos vs sin datos)
+        const empleadosConCategoria = empleados.filter(emp => 
+            emp.categoria && emp.categoria.trim() !== ''
+        );
+        
+        const empleadosSinCategoria = empleados.filter(emp => 
+            !emp.categoria || emp.categoria.trim() === ''
+        );
+        
+        // Crear las dos categorías
+        allCategories = [
+            {
+                name: 'Mando',
+                description: 'Personal directivo y mandos medios',
+                icon: '👨‍💼',
+                type: 'mando',
+                color: '#8b7355',
+                totalEmployees: empleadosConCategoria.length,
+                employees: empleadosConCategoria
+            },
+            {
+                name: 'Ordinaria',
+                description: 'Personal operativo y administrativo',
+                icon: '👤',
+                type: 'ordinaria', 
+                color: '#7f8c8d',
+                totalEmployees: empleadosSinCategoria.length,
+                employees: empleadosSinCategoria
+            }
+        ];
+        
+        console.log(`✅ ${allCategories.length} categorías cargadas`);
+        console.log(`📊 Mando: ${empleadosConCategoria.length} empleados`);
+        console.log(`📊 Ordinaria: ${empleadosSinCategoria.length} empleados`);
+        
+        return allCategories;
+        
+    } catch (error) {
+        console.error('Error cargando categorías:', error);
+        return [];
+    }
+}
+
+// Función para mostrar la vista de categorías principales
+async function showCategoriesView() {
+    try {
+        showLoading();
+        
+        // Cargar categorías
+        await loadCategoriasFromSupabase();
+        
+        // Ocultar controles de búsqueda
+        const searchContainer = document.querySelector('.search-container');
+        const controlsSection = document.querySelector('.controls-section');
+        
+        if (searchContainer) searchContainer.style.display = 'none';
+        if (controlsSection) controlsSection.style.display = 'none';
+        
+        const employeesGrid = document.getElementById('employeesGrid');
+        
+        if (employeesGrid) {
+            employeesGrid.innerHTML = '';
+            employeesGrid.className = 'categories-grid';
+            renderCategories();
+        }
+        
+        showContent();
+        
+    } catch (error) {
+        console.error('Error mostrando categorías:', error);
+        showError('Error cargando categorías');
+    }
+}
+
+// Función para renderizar las tarjetas de categorías
+function renderCategories() {
+    const grid = document.getElementById('employeesGrid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+
+    if (!allCategories || allCategories.length === 0) {
+        grid.innerHTML = `
+            <div class="loading" style="grid-column: 1 / -1;">
+                👥 No se encontraron categorías
+            </div>
+        `;
+        return;
+    }
+
+    allCategories.forEach((category, index) => {
+        const categoryCard = createCategoryCard(category, index);
+        grid.appendChild(categoryCard);
+    });
+
+    // Actualizar contador
+    const totalRecords = document.getElementById('totalRecords');
+    if (totalRecords) {
+        totalRecords.textContent = `${allCategories.length} categoría${allCategories.length !== 1 ? 's' : ''} encontrada${allCategories.length !== 1 ? 's' : ''}`;
+    }
+}
+
+// Función para crear tarjeta de categoría
+function createCategoryCard(category, index) {
+    const categoryCard = document.createElement('div');
+    categoryCard.className = 'category-card';
+    categoryCard.style.animationDelay = `${index * 0.2}s`;
+    categoryCard.style.borderLeftColor = category.color;
+    
+    categoryCard.innerHTML = `
+        <div class="category-header">
+            <div class="category-icon" style="background: linear-gradient(135deg, ${category.color} 0%, ${category.color}cc 100%);">
+                ${category.icon}
+            </div>
+            <div class="category-info">
+                <div class="category-name">${category.name}</div>
+                <div class="category-description">${category.description}</div>
+            </div>
+        </div>
+        
+        <div class="category-stats">
+            <div class="employee-count">
+                <span class="count-number">${category.totalEmployees}</span>
+                <span class="count-label">empleado${category.totalEmployees !== 1 ? 's' : ''}</span>
+            </div>
+        </div>
+        
+        <button class="view-category-btn" style="background: linear-gradient(135deg, ${category.color} 0%, ${category.color}cc 100%);" onclick="showEmployeesInCategory('${category.type}')">
+            Ver empleados
+        </button>
+    `;
+    
+    return categoryCard;
+}
+
+// Función para mostrar empleados de una categoría específica
+async function showEmployeesInCategory(categoryType) {
+    try {
+        currentCategory = categoryType;
+        
+        showLoading();
+        
+        // Encontrar la categoría
+        const category = allCategories.find(c => c.type === categoryType);
+        if (!category) return;
+        
+        // Mapear empleados de esta categoría
+        currentCategoryEmployees = category.employees.map(emp => ({
+            name: emp.nomExt || 'Sin nombre',
+            extension: emp.extension?.toString() || 'Sin extensión',
+            floor: emp.piso ? `Piso ${emp.piso}` : 'Sin ubicación',
+            edificio: emp.edificio || 'N/A',
+            categoria: emp.categoria || 'Ordinaria',
+            adscripcion: emp.adscripcion || 'Sin adscripción',
+            adscripcionCorta: emp.adscripcionCorta || 'Sin adscripción',
+            ubicacion: emp.ubicacion || 'Sin ubicación'
+        }));
+        
+        allEmployees = [...currentCategoryEmployees];
+        currentEmployees = [...currentCategoryEmployees];
+        
+        // Actualizar título
+        const directoryTitle = document.querySelector('.directory-title');
+        if (directoryTitle) {
+            directoryTitle.textContent = `Empleados - ${category.name}`;
+        }
+        
+        // Mostrar vista de empleados estándar
+        const searchContainer = document.querySelector('.search-container');
+        const controlsSection = document.querySelector('.controls-section');
+        
+        if (searchContainer) searchContainer.style.display = 'flex';
+        if (controlsSection) {
+            // Restaurar controles estándar (sin filtros especiales)
+            restoreStandardControls();
+            controlsSection.style.display = 'flex';
+        }
+        
+        const employeesGrid = document.getElementById('employeesGrid');
+        if (employeesGrid) {
+            employeesGrid.className = 'employees-grid';
+        }
+        
+        showContent();
+        renderEmployees();
+        updateBackButtonText();
+        
+        console.log(`✅ ${allEmployees.length} empleados cargados para categoría ${category.name}`);
+        
+    } catch (error) {
+        console.error('Error cargando empleados de categoría:', error);
+        showError(`Error cargando empleados de la categoría`);
+    }
+}
+
+// Función para restaurar controles estándar
+function restoreStandardControls() {
+    const controlsSection = document.querySelector('.controls-section');
+    if (!controlsSection) return;
+    
+    // Limpiar controles existentes
+    controlsSection.innerHTML = '';
+    
+    // Crear controles de ordenamiento estándar
+    const sortContainer = document.createElement('div');
+    sortContainer.className = 'sort-controls';
+    
+    const sortAZ = document.createElement('button');
+    sortAZ.className = 'sort-button active';
+    sortAZ.textContent = 'A → Z';
+    sortAZ.onclick = () => sortBy('az');
+    
+    const sortZA = document.createElement('button');
+    sortZA.className = 'sort-button';
+    sortZA.textContent = 'Z → A';
+    sortZA.onclick = () => sortBy('za');
+    
+    sortContainer.appendChild(sortAZ);
+    sortContainer.appendChild(sortZA);
+    
+    // Agregar contador de resultados
+    const resultsInfo = document.createElement('div');
+    resultsInfo.className = 'results-info';
+    resultsInfo.innerHTML = `<span id="totalRecords">${currentEmployees.length} registro${currentEmployees.length !== 1 ? 's' : ''} encontrado${currentEmployees.length !== 1 ? 's' : ''}</span>`;
+    
+    controlsSection.appendChild(sortContainer);
+    controlsSection.appendChild(resultsInfo);
+}
+
+// Función para regresar a la vista de categorías
+function backToCategories() {
+    currentCategory = '';
+    showCategoriesView();
+    
+    const directoryTitle = document.querySelector('.directory-title');
+    if (directoryTitle) {
+        directoryTitle.textContent = 'Directorio por Categoría';
+    }
+    
+    updateBackButtonText();
+}
+
+// Actualizar la función showDirectory existente para incluir categorías
+function showDirectory(module) {
+    if (isLoading) return;
+
+    currentModule = module;
+    
+    const mainPage = document.getElementById('mainPage');
+    const directoryPage = document.getElementById('directoryPage');
+    
+    if (mainPage) mainPage.style.display = 'none';
+    if (directoryPage) directoryPage.style.display = 'block';
+    
+    // Actualizar estado del menú
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach(link => link.classList.remove('active'));
+    
+    const directoryLink = document.querySelector('.nav-links a[onclick*="showDirectory"]');
+    if (directoryLink) {
+        directoryLink.classList.add('active');
+    }
+    
+    // Actualizar título según el módulo
+    const titles = {
+        'ubicacion': 'Directorio por Ubicación',
+        'adscripcion': 'Directorio por Adscripción', 
+        'categoria': 'Directorio por Categoría',
+        'completo': 'Listado Completo'
+    };
+    
+    const directoryTitle = document.querySelector('.directory-title');
+    if (directoryTitle) {
+        directoryTitle.textContent = titles[module] || 'Agenda Dirección Jurídica';
+    }
+    
+    // Mostrar vista según el módulo
+    if (module === 'ubicacion') {
+        showLocationsView();
+    } else if (module === 'adscripcion') {
+        showUnitsView();
+    } else if (module === 'categoria') {
+        showCategoriesView();
+    } else {
+        showEmployeesView();
+    }
+    
+    // Limpiar búsqueda
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.value = '';
+}
+
+// Actualizar la función smartBack para incluir categorías
+function smartBack() {
+    // Si estamos viendo empleados de una categoría
+    if (currentCategory && currentModule === 'categoria') {
+        backToCategories();
+    }
+    // Si estamos viendo empleados de una unidad
+    else if (currentUnit && currentModule === 'adscripcion') {
+        backToUnits();
+    }
+    // Si estamos viendo empleados de una ubicación específica
+    else if (currentLocation && currentModule === 'ubicacion') {
+        backToLocations();
+    } 
+    // En cualquier otro caso, regresar al inicio
+    else {
+        showMain();
+    }
+}
+
+// Actualizar la función updateBackButtonText para incluir categorías
+function updateBackButtonText() {
+    const backButtonText = document.getElementById('backButtonText');
+    if (!backButtonText) return;
+    
+    if (currentCategory && currentModule === 'categoria') {
+        backButtonText.textContent = 'Volver a Categorías';
+    } else if (currentUnit && currentModule === 'adscripcion') {
+        backButtonText.textContent = 'Volver a Unidades';
+    } else if (currentLocation && currentModule === 'ubicacion') {
+        backButtonText.textContent = 'Volver a Edificios';
+    } else if (currentModule) {
+        backButtonText.textContent = 'Regresar al Inicio';
+    } else {
+        backButtonText.textContent = 'Regresar';
+    }
+}
+
+
 //FIN DEL CODIGO NUEVO
 
 // ===================================

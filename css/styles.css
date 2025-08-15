@@ -2051,3 +2051,323 @@ body {
         padding: 0.35rem 0.7rem;
     }
 }
+
+
+/* ===================================
+   SISTEMA DE CATEGORÍAS
+   =================================== */
+
+/* Grid para categorías - Layout vertical como en la imagen 4 */
+.categories-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Tarjeta de categoría - Diseño horizontal */
+.category-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: 4px solid #8b7355;
+    overflow: hidden;
+    cursor: pointer;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(139, 115, 85, 0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.category-card:hover::before {
+    left: 100%;
+}
+
+.category-card:hover {
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+/* Header de la categoría */
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-grow: 1;
+}
+
+.category-icon {
+    font-size: 3rem;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #8b7355 0%, #a68b5b 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(139, 115, 85, 0.3);
+    flex-shrink: 0;
+}
+
+.category-info {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.category-name {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.category-description {
+    color: #7f8c8d;
+    font-size: 1rem;
+    line-height: 1.4;
+    opacity: 0.9;
+}
+
+/* Estadísticas de la categoría */
+.category-stats {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(139, 115, 85, 0.08);
+    border-radius: 12px;
+    border: 1px solid rgba(139, 115, 85, 0.1);
+    min-width: 120px;
+}
+
+.category-card .employee-count {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.category-card .count-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #8b7355;
+    line-height: 1;
+}
+
+.category-card .count-label {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Botón de ver categoría */
+.view-category-btn {
+    background: linear-gradient(135deg, #8b7355 0%, #a68b5b 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(139, 115, 85, 0.3);
+    white-space: nowrap;
+    min-width: 140px;
+}
+
+.view-category-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(139, 115, 85, 0.4);
+}
+
+.view-category-btn:active {
+    transform: translateY(0);
+}
+
+/* Variaciones de color para diferentes categorías */
+.category-card[data-type="mando"] .category-icon {
+    background: linear-gradient(135deg, #8b7355 0%, #a68b5b 100%);
+}
+
+.category-card[data-type="mando"] .view-category-btn {
+    background: linear-gradient(135deg, #8b7355 0%, #a68b5b 100%);
+}
+
+.category-card[data-type="ordinaria"] .category-icon {
+    background: linear-gradient(135deg, #7f8c8d 0%, #95a5a6 100%);
+}
+
+.category-card[data-type="ordinaria"] .view-category-btn {
+    background: linear-gradient(135deg, #7f8c8d 0%, #95a5a6 100%);
+}
+
+.category-card[data-type="ordinaria"] {
+    border-left-color: #7f8c8d;
+}
+
+/* Animación de entrada */
+.category-card {
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Escalonar animaciones */
+.category-card:nth-child(1) { animation-delay: 0.1s; }
+.category-card:nth-child(2) { animation-delay: 0.3s; }
+
+/* ===================================
+   RESPONSIVE PARA CATEGORÍAS
+   =================================== */
+
+@media (max-width: 768px) {
+    .categories-grid {
+        gap: 1rem;
+        max-width: 100%;
+    }
+    
+    .category-card {
+        padding: 1.5rem;
+        min-height: 100px;
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .category-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .category-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2.5rem;
+    }
+    
+    .category-name {
+        font-size: 1.4rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .category-description {
+        font-size: 0.9rem;
+    }
+    
+    .category-stats {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .view-category-btn {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .category-card {
+        padding: 1.25rem;
+        min-height: 80px;
+    }
+    
+    .category-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 2rem;
+    }
+    
+    .category-name {
+        font-size: 1.2rem;
+    }
+    
+    .category-description {
+        font-size: 0.8rem;
+    }
+    
+    .count-number {
+        font-size: 1.5rem !important;
+    }
+    
+    .count-label {
+        font-size: 0.7rem !important;
+    }
+    
+    .view-category-btn {
+        font-size: 0.9rem;
+        padding: 0.6rem 1.2rem;
+    }
+}
+
+/* ===================================
+   ESTADOS ESPECIALES
+   =================================== */
+
+/* Estado de carga para categorías */
+.categories-grid .loading {
+    text-align: center;
+    padding: 3rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    font-size: 1.1rem;
+    color: #7f8c8d;
+}
+
+/* Efecto hover mejorado */
+.category-card:hover .category-icon {
+    transform: scale(1.05);
+}
+
+.category-card:hover .category-name {
+    color: #8b7355;
+}
+
+/* Transiciones suaves */
+.category-icon,
+.category-name,
+.view-category-btn {
+    transition: all 0.3s ease;
+}
+
+/* Mejora de accesibilidad */
+.category-card:focus {
+    outline: 3px solid rgba(139, 115, 85, 0.3);
+    outline-offset: 2px;
+}
+
+.view-category-btn:focus {
+    outline: 3px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+}
