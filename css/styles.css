@@ -1732,7 +1732,7 @@ body {
 
 
 /* ===================================
-   TARJETAS DE ADSCRIPCIONES - UNIDADES Y SUB-UNIDADES
+   SISTEMA DE ADSCRIPCIONES SIMPLIFICADO
    =================================== */
 
 /* Grid para unidades principales */
@@ -1740,14 +1740,6 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 2rem;
-    margin-bottom: 2rem;
-}
-
-/* Grid para sub-unidades */
-.subunits-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 1.5rem;
     margin-bottom: 2rem;
 }
 
@@ -1760,13 +1752,13 @@ body {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     transition: all 0.4s ease;
     border: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: 4px solid #8b7355;
     overflow: hidden;
     cursor: pointer;
-    min-height: 250px;
+    min-height: 280px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    border-left: 4px solid #8b7355;
 }
 
 .unit-card::before {
@@ -1776,7 +1768,7 @@ body {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(139, 115, 85, 0.1), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
     transition: left 0.6s ease;
 }
 
@@ -1787,7 +1779,6 @@ body {
 .unit-card:hover {
     transform: translateY(-10px) scale(1.02);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-    border-left-color: #a68b5b;
 }
 
 /* Header de la unidad */
@@ -1820,15 +1811,58 @@ body {
     font-size: 1.2rem;
     font-weight: 700;
     color: #2c3e50;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
     line-height: 1.3;
     word-wrap: break-word;
 }
 
 .unit-subunits {
-    color: #7f8c8d;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.subunit-tag {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: #495057;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Estadísticas de la unidad */
+.unit-stats {
+    text-align: center;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: rgba(139, 115, 85, 0.08);
+    border-radius: 12px;
+    border: 1px solid rgba(139, 115, 85, 0.1);
+}
+
+.employee-count {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.count-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #8b7355;
+    line-height: 1;
+}
+
+.count-label {
     font-size: 0.9rem;
-    font-style: italic;
+    color: #7f8c8d;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 /* Botón de ver unidad */
@@ -1850,147 +1884,102 @@ body {
 .view-unit-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(139, 115, 85, 0.4);
-    background: linear-gradient(135deg, #a68b5b 0%, #8b7355 100%);
 }
 
 /* ===================================
-   TARJETAS DE SUB-UNIDADES
+   FILTROS DE SUB-UNIDADES
    =================================== */
 
-/* Tarjeta de sub-unidad */
-.subunit-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
-    border-radius: 12px;
-    padding: 1.5rem;
-    position: relative;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    overflow: hidden;
-    cursor: pointer;
-    min-height: 200px;
+.filters-container {
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border-left: 3px solid #3498db;
-}
-
-.subunit-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-    border-left-color: #2980b9;
-}
-
-/* Header de la sub-unidad */
-.subunit-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.subunit-icon {
-    font-size: 2.5rem;
-    width: 50px;
-    height: 50px;
-    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
-    flex-shrink: 0;
 }
 
-.subunit-info {
-    flex-grow: 1;
-    min-width: 0;
-}
-
-.subunit-name {
-    font-size: 1rem;
-    font-weight: 700;
+.filter-button {
+    background: white;
+    border: 2px solid #e0e0e0;
     color: #2c3e50;
-    margin-bottom: 0.5rem;
-    line-height: 1.3;
-    word-wrap: break-word;
-}
-
-.subunit-short {
-    color: #7f8c8d;
-    font-size: 0.85rem;
-    font-weight: 600;
-    background: #f8f9fa;
-    padding: 0.25rem 0.5rem;
-    border-radius: 6px;
-    display: inline-block;
-}
-
-/* Estadísticas de la sub-unidad */
-.subunit-stats {
-    text-align: center;
-    margin: 1rem 0;
-    padding: 0.75rem;
-    background: rgba(52, 152, 219, 0.08);
-    border-radius: 8px;
-    border: 1px solid rgba(52, 152, 219, 0.1);
-}
-
-/* Botón de ver sub-unidad */
-.view-subunit-btn {
-    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-    color: white;
-    border: none;
-    padding: 0.6rem 1.25rem;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
     cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-    width: 100%;
-    margin-top: auto;
+    white-space: nowrap;
 }
 
-.view-subunit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
-    background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+.filter-button:hover {
+    border-color: #8b7355;
+    background: #f8f9fa;
+    transform: translateY(-1px);
+}
+
+.filter-button.active {
+    background: linear-gradient(135deg, #8b7355 0%, #a68b5b 100%);
+    color: white;
+    border-color: #8b7355;
+    box-shadow: 0 4px 15px rgba(139, 115, 85, 0.3);
+}
+
+/* Ajustar la sección de controles para los filtros */
+.controls-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 1.5rem;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 /* ===================================
-   ANIMACIONES PARA ADSCRIPCIONES
+   ANIMACIONES
    =================================== */
 
-.unit-card, .subunit-card {
+.unit-card {
     animation: fadeInUp 0.6s ease forwards;
     opacity: 0;
 }
 
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Escalonar animaciones */
-.unit-card:nth-child(1), .subunit-card:nth-child(1) { animation-delay: 0.1s; }
-.unit-card:nth-child(2), .subunit-card:nth-child(2) { animation-delay: 0.2s; }
-.unit-card:nth-child(3), .subunit-card:nth-child(3) { animation-delay: 0.3s; }
-.unit-card:nth-child(4), .subunit-card:nth-child(4) { animation-delay: 0.4s; }
-.unit-card:nth-child(5), .subunit-card:nth-child(5) { animation-delay: 0.5s; }
-.unit-card:nth-child(n+6), .subunit-card:nth-child(n+6) { animation-delay: 0.6s; }
+.unit-card:nth-child(1) { animation-delay: 0.1s; }
+.unit-card:nth-child(2) { animation-delay: 0.2s; }
+.unit-card:nth-child(3) { animation-delay: 0.3s; }
+.unit-card:nth-child(4) { animation-delay: 0.4s; }
 
 /* ===================================
-   RESPONSIVE PARA ADSCRIPCIONES
+   RESPONSIVE
    =================================== */
 
 @media (max-width: 768px) {
-    .units-grid, .subunits-grid {
+    .units-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
     
-    .unit-card, .subunit-card {
+    .unit-card {
         padding: 1.5rem;
-        min-height: auto;
+        min-height: 260px;
     }
     
-    .unit-header, .subunit-header {
+    .unit-header {
         gap: 1rem;
     }
     
@@ -2000,33 +1989,65 @@ body {
         font-size: 3rem;
     }
     
-    .subunit-icon {
-        width: 45px;
-        height: 45px;
-        font-size: 2rem;
-    }
-    
     .unit-name {
         font-size: 1.1rem;
     }
     
-    .subunit-name {
-        font-size: 0.95rem;
+    .subunit-tag {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.6rem;
+    }
+    
+    .filters-container {
+        justify-content: center;
+    }
+    
+    .filter-button {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .controls-section {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
     }
 }
 
 @media (max-width: 480px) {
-    .unit-card, .subunit-card {
+    .unit-card {
         padding: 1.25rem;
+        min-height: 240px;
     }
     
-    .unit-header, .subunit-header {
+    .unit-header {
         flex-direction: column;
         text-align: center;
         gap: 1rem;
     }
     
-    .unit-icon, .subunit-icon {
+    .unit-icon {
         align-self: center;
+        width: 55px;
+        height: 55px;
+        font-size: 2.5rem;
+    }
+    
+    .unit-subunits {
+        justify-content: center;
+    }
+    
+    .subunit-tag {
+        font-size: 0.7rem;
+        padding: 0.15rem 0.5rem;
+    }
+    
+    .count-number {
+        font-size: 2rem;
+    }
+    
+    .filter-button {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.7rem;
     }
 }
