@@ -1202,10 +1202,13 @@ async function showLocationsView() {
 // Nueva función para mostrar la vista normal de empleados
 function showEmployeesView() {
     // Restaurar controles de empleados
-    const controlsSection = document.getElementById('controlsSection');
-    const employeesGrid = document.getElementById('employeesGrid');
+    const searchContainer = document.querySelector('.search-container');
+    const controlsSection = document.querySelector('.controls-section');
     
     if (controlsSection) controlsSection.style.display = 'flex';
+    if (searchContainer) searchContainer.style.display = 'flex';
+
+    const employeesGrid = document.getElementById('employeesGrid');
     if (employeesGrid) {
         employeesGrid.className = 'employees-grid'; // Restaurar clase original
     }
@@ -1311,9 +1314,10 @@ async function showEmployeesInLocation(locationName) {
         }
         
         // Mostrar vista de empleados
-        const controlsSection = document.getElementById('controlsSection');
-        const employeesGrid = document.getElementById('employeesGrid');
+        const searchContainer = document.querySelector('.search-container');
+        const controlsSection = document.querySelector('.controls-section');
         
+        if (searchContainer) searchContainer.style.display = 'flex';
         if (controlsSection) controlsSection.style.display = 'flex';
         if (employeesGrid) {
             employeesGrid.className = 'employees-grid';
