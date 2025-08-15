@@ -388,12 +388,17 @@ function showHelp() {
     }
 }
 
-// Mostrar manual
 function showManual() {
-    showNotification('Abriendo manual de usuario...', 'info');
+    // Mostrar primera notificación con referencia
+    const firstNotification = showNotification('Abriendo manual de usuario...', 'info', 2000);
+    
     setTimeout(() => {
+        // Cerrar la primera notificación específicamente
+        closeNotification(firstNotification);
+        
+        // Mostrar segunda notificación
         showNotification('Manual disponible en el portal de empleados', 'success');
-    }, 2500);
+    }, 2000);
 }
 
 // Reportar problema
@@ -2134,6 +2139,24 @@ function updateBackButtonText() {
     }
 }
 
+
+// ===================================
+// CERRAR NOTIFICACIONES
+// ===================================
+
+
+// Función para cerrar todas las notificaciones
+function closeAllNotifications() {
+    const notifications = document.querySelectorAll('.notification');
+    notifications.forEach(notification => notification.remove());
+}
+
+// Función para cerrar una notificación específica
+function closeNotification(notificationElement) {
+    if (notificationElement && notificationElement.parentNode) {
+        notificationElement.remove();
+    }
+}
 
 //FIN DEL CODIGO NUEVO
 
