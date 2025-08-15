@@ -1595,3 +1595,135 @@ body {
     }
 }
 
+
+/* ===================================
+   RESPONSIVE MEJORADO PARA EMPLEADOS
+   =================================== */
+
+@media (max-width: 768px) {
+    .employees-grid {
+        grid-template-columns: 1fr !important; /* Una sola columna */
+        gap: 1rem;
+        padding: 0 0.5rem; /* Menos padding */
+    }
+    
+    .employee-card {
+        padding: 1rem; /* Menos padding interno */
+        min-height: auto;
+        margin: 0; /* Sin margin extra */
+    }
+    
+    .employee-header {
+        padding-right: 60px; /* Menos espacio para badges */
+        gap: 0.75rem;
+    }
+    
+    .employee-avatar {
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+    
+    .employee-name {
+        font-size: 0.9rem;
+        line-height: 1.2;
+        margin-bottom: 0.25rem;
+    }
+    
+    .employee-details {
+        flex-direction: column; /* Apilar verticalmente */
+        gap: 0.25rem;
+        align-items: flex-start;
+    }
+    
+    .employee-id {
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+    }
+    
+    .floor-badge, .office-badge {
+        font-size: 0.65rem;
+        padding: 0.25rem 0.5rem;
+        position: absolute;
+        right: 0.5rem;
+    }
+    
+    .floor-badge {
+        top: 0.5rem;
+    }
+    
+    .office-badge {
+        bottom: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        padding: 0.5rem; /* Menos padding general */
+    }
+    
+    .directory-header {
+        padding: 1rem; /* Menos padding */
+    }
+    
+    .content-area {
+        padding: 1rem; /* Menos padding */
+    }
+    
+    .employee-card {
+        padding: 0.75rem; /* Aún menos padding */
+    }
+    
+    .employee-header {
+        padding-right: 50px;
+    }
+    
+    .employee-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+    }
+    
+    .employee-name {
+        font-size: 0.85rem;
+    }
+    
+    .employee-details {
+        font-size: 0.75rem;
+    }
+    
+    .floor-badge, .office-badge {
+        font-size: 0.6rem;
+        padding: 0.2rem 0.4rem;
+    }
+}
+
+/* ===================================
+   ARREGLO PARA CONTENIDO LARGO
+   =================================== */
+
+.employee-name {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+}
+
+.employee-details span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+/* Para nombres muy largos */
+@media (max-width: 380px) {
+    .employee-name {
+        font-size: 0.8rem;
+        line-height: 1.1;
+    }
+    
+    .employee-card {
+        padding: 0.5rem;
+    }
+}
