@@ -754,6 +754,7 @@ function showMain() {
     // Resetear datos
     currentEmployees = [...allEmployees];
     currentModule = '';
+    currentLocation = '';
 }
 
 // ===================================
@@ -1046,6 +1047,436 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
         exportCSV: exportEmployeesToCSV
     };
 }
+
+
+//CODIGO NUEVO
+
+// ===================================
+// SISTEMA DE UBICACIONES
+// ===================================
+
+// Variables globales para ubicaciones
+let allLocations = [];
+let currentLocation = '';
+
+// Función para cargar ubicaciones únicas desde Supabase
+async function loadLocationsFromSupabase() {
+    try {
+        console.log('Cargando ubicaciones...');
+        
+        // Obtener todas las ubicaciones únicas
+        const { data: empleados, error } = await supabase
+            .from('empleados')
+            .select('edificio, ubicacion')
+            .not('edificio', 'is', null)
+            .not('edificio', 'eq', '');
+        
+        if (error) {
+            throw new Error(`Error cargando ubicaciones: ${error.message}`);
+        }
+
+        // Agrupar por edificio y contar empleados
+        const ubicacionesMap = new Map();
+        
+        empleados.forEach(emp => {
+            const edificio = emp.edificio || 'Sin ubicación';
+            
+            if (ubicacionesMap.has(edificio)) {
+                ubicacionesMap.get(edificio).count++;
+            } else {
+                ubicacionesMap.set(edificio, {
+                    name: edificio,
+                    fullAddress: emp.ubicacion || edificio,
+                    count: 1,
+                    // Agregar icono según el tipo de edificio
+                    icon: getLocationIcon(edificio)
+                });
+            }
+        });
+        
+        // Convertir a array y ordenar
+        allLocations = Array.from(ubicacionesMap.values())
+            .sort((a, b) => a.name.localeCompare(b.name));
+        
+        console.log(`✅ ${allLocations.length} ubicaciones cargadas`);
+        return allLocations;
+        
+    } catch (error) {
+        console.error('Error cargando ubicaciones:', error);
+        return [];
+    }
+}
+
+// Función para obtener icono según el edificio
+function getLocationIcon(edificio) {
+    const nombre = edificio.toLowerCase();
+    
+    if (nombre.includes('reforma')) return '🏛️';
+    if (nombre.includes('hamburgo')) return '🏢';
+    if (nombre.includes('tokio')) return '🏬';
+    if (nombre.includes('manuel') || nombre.includes('villalongin')) return '🏤';
+    if (nombre.includes('insurgentes')) return '🏙️';
+    
+    // Por defecto
+    return '🏢';
+}
+
+// Modificar la función showDirectory existente
+function showDirectory(module) {
+    if (isLoading) return;
+
+    currentModule = module;
+    
+    const mainPage = document.getElementById('mainPage');
+    const directoryPage = document.getElementById('directoryPage');
+    
+    if (mainPage) mainPage.style.display = 'none';
+    if (directoryPage) directoryPage.style.display = 'block';
+    
+    // Actualizar estado del menú
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach(link => link.classList.remove('active'));
+    
+    const directoryLink = document.querySelector('.nav-links a[onclick*="showDirectory"]');
+    if (directoryLink) {
+        directoryLink.classList.add('active');
+    }
+    
+    // Actualizar título según el módulo
+    const titles = {
+        'ubicacion': 'Directorio por Ubicación',
+        'adscripcion': 'Directorio por Adscripción', 
+        'categoria': 'Directorio por Categoría',
+        'completo': 'Listado Completo'
+    };
+    
+    const directoryTitle = document.querySelector('.directory-title');
+    if (directoryTitle) {
+        directoryTitle.textContent = titles[module] || 'Agenda Dirección Jurídica';
+    }
+    
+    // 🎯 NUEVA LÓGICA: Mostrar vista según el módulo
+    if (module === 'ubicacion') {
+        showLocationsView();
+    } else {
+        showEmployeesView();
+    }
+    
+    // Limpiar búsqueda
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.value = '';
+}
+
+// Nueva función para mostrar la vista de ubicaciones (edificios)
+async function showLocationsView() {
+    try {
+        showLoading();
+        
+        // Cargar ubicaciones
+        await loadLocationsFromSupabase();
+        
+        // Ocultar controles de empleados y mostrar vista de ubicaciones
+        const controlsSection = document.getElementById('controlsSection');
+        const employeesGrid = document.getElementById('employeesGrid');
+        
+        if (controlsSection) controlsSection.style.display = 'none';
+        
+        if (employeesGrid) {
+            employeesGrid.innerHTML = '';
+            employeesGrid.className = 'locations-grid'; // Cambiar clase
+            renderLocations();
+        }
+        
+        showContent();
+        
+    } catch (error) {
+        console.error('Error mostrando ubicaciones:', error);
+        showError('Error cargando ubicaciones');
+    }
+}
+
+// Nueva función para mostrar la vista normal de empleados
+function showEmployeesView() {
+    // Restaurar controles de empleados
+    const controlsSection = document.getElementById('controlsSection');
+    const employeesGrid = document.getElementById('employeesGrid');
+    
+    if (controlsSection) controlsSection.style.display = 'flex';
+    if (employeesGrid) {
+        employeesGrid.className = 'employees-grid'; // Restaurar clase original
+    }
+    
+    // Cargar empleados normal
+    loadEmployeesFromSupabase();
+}
+
+// Función para renderizar las tarjetas de ubicaciones
+function renderLocations() {
+    const grid = document.getElementById('employeesGrid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+
+    if (!allLocations || allLocations.length === 0) {
+        grid.innerHTML = `
+            <div class="loading" style="grid-column: 1 / -1;">
+                🏢 No se encontraron ubicaciones
+            </div>
+        `;
+        return;
+    }
+
+    allLocations.forEach((location, index) => {
+        const locationCard = createLocationCard(location, index);
+        grid.appendChild(locationCard);
+    });
+
+    // Actualizar contador
+    const totalRecords = document.getElementById('totalRecords');
+    if (totalRecords) {
+        totalRecords.textContent = `${allLocations.length} ubicación${allLocations.length !== 1 ? 'es' : ''} encontrada${allLocations.length !== 1 ? 's' : ''}`;
+    }
+}
+
+// Función para crear tarjeta de ubicación
+function createLocationCard(location, index) {
+    const locationCard = document.createElement('div');
+    locationCard.className = 'location-card';
+    locationCard.style.animationDelay = `${index * 0.1}s`;
+    
+    locationCard.innerHTML = `
+        <div class="location-header">
+            <div class="location-icon">${location.icon}</div>
+            <div class="location-info">
+                <div class="location-name">${location.name}</div>
+                <div class="location-address">${location.fullAddress}</div>
+            </div>
+        </div>
+        
+        <div class="location-stats">
+            <div class="employee-count">
+                <span class="count-number">${location.count}</span>
+                <span class="count-label">empleado${location.count !== 1 ? 's' : ''}</span>
+            </div>
+        </div>
+        
+        <button class="view-building-btn" onclick="goToLocationEmployees('${location.name}')">
+            Ver todo el edificio
+        </button>
+    `;
+    
+    return locationCard;
+}
+
+// Función para mostrar empleados de una ubicación específica
+async function showEmployeesInLocation(locationName) {
+    try {
+        currentLocation = locationName;
+        
+        showLoading();
+        
+        // Cargar empleados de esa ubicación específica
+        const { data: empleados, error } = await supabase
+            .from('empleados')
+            .select('*')
+            .eq('edificio', locationName)
+            .order('nomExt', { ascending: true });
+        
+        if (error) {
+            throw new Error(`Error cargando empleados: ${error.message}`);
+        }
+        
+        // Mapear empleados
+        allEmployees = empleados.map(emp => ({
+            name: emp.nomExt || 'Sin nombre',
+            extension: emp.extension?.toString() || 'Sin extensión',
+            floor: emp.piso ? `Piso ${emp.piso}` : 'Sin ubicación',
+            edificio: emp.edificio || 'N/A',
+            categoria: emp.categoria || 'Sin categoría',
+            adscripcion: emp.adscripcion || 'Sin adscripción',
+            adscripcionCorta: emp.adscripcionCorta || 'Sin adscripción',
+            ubicacion: emp.ubicacion || 'Sin ubicación'
+        }));
+        
+        currentEmployees = [...allEmployees];
+        
+        // Actualizar título
+        const directoryTitle = document.querySelector('.directory-title');
+        if (directoryTitle) {
+            directoryTitle.textContent = `Empleados en ${locationName}`;
+        }
+        
+        // Mostrar vista de empleados
+        const controlsSection = document.getElementById('controlsSection');
+        const employeesGrid = document.getElementById('employeesGrid');
+        
+        if (controlsSection) controlsSection.style.display = 'flex';
+        if (employeesGrid) {
+            employeesGrid.className = 'employees-grid';
+        }
+        
+        showContent();
+        renderEmployees();
+        
+        console.log(`✅ ${allEmployees.length} empleados cargados para ${locationName}`);
+        
+    } catch (error) {
+        console.error('Error cargando empleados de ubicación:', error);
+        showError(`Error cargando empleados de ${locationName}`);
+    }
+}
+
+// Función para regresar a la vista de ubicaciones
+function backToLocations() {
+    currentLocation = '';
+    showLocationsView();
+    
+    // Restaurar título
+    const directoryTitle = document.querySelector('.directory-title');
+    if (directoryTitle) {
+        directoryTitle.textContent = 'Directorio por Ubicación';
+    }
+}
+
+
+
+// ===================================
+// ROUTER PARA URLs AMIGABLES - CÓDIGO NUEVO
+// ===================================
+
+// Router simple
+class SimpleRouter {
+    constructor() {
+        this.routes = {
+            '/': () => this.showPage('main'),
+            '/ubicaciones': () => this.showPage('locations'),
+            '/ubicaciones/:location': (params) => this.showPage('employees-location', params),
+            '/directorio': () => this.showPage('employees', 'completo'),
+            '/directorio/categoria': () => this.showPage('employees', 'categoria'),
+            '/directorio/adscripcion': () => this.showPage('employees', 'adscripcion')
+        };
+        
+        this.init();
+    }
+    
+    init() {
+        window.addEventListener('popstate', (e) => {
+            this.handleRoute(window.location.pathname);
+        });
+        
+        this.handleRoute(window.location.pathname);
+    }
+    
+    navigateTo(path) {
+        window.history.pushState({}, '', path);
+        this.handleRoute(path);
+    }
+    
+    handleRoute(path) {
+        console.log('📍 Navegando a:', path);
+        
+        if (this.routes[path]) {
+            this.routes[path]();
+            return;
+        }
+        
+        for (const route in this.routes) {
+            const params = this.matchRoute(route, path);
+            if (params) {
+                this.routes[route](params);
+                return;
+            }
+        }
+        
+        console.log('⚠️ Ruta no encontrada, redirigiendo al inicio');
+        this.navigateTo('/');
+    }
+    
+    matchRoute(routePattern, currentPath) {
+        const routeParts = routePattern.split('/');
+        const pathParts = currentPath.split('/');
+        
+        if (routeParts.length !== pathParts.length) return null;
+        
+        const params = {};
+        
+        for (let i = 0; i < routeParts.length; i++) {
+            if (routeParts[i].startsWith(':')) {
+                const paramName = routeParts[i].slice(1);
+                params[paramName] = decodeURIComponent(pathParts[i]);
+            } else if (routeParts[i] !== pathParts[i]) {
+                return null;
+            }
+        }
+        
+        return params;
+    }
+    
+    showPage(type, param = null) {
+        switch (type) {
+            case 'main':
+                showMain(); // Usa tu función existente
+                break;
+            case 'locations':
+                showDirectory('ubicacion'); // Usa tu función existente
+                break;
+            case 'employees-location':
+                showDirectory('ubicacion');
+                setTimeout(() => showEmployeesInLocation(param.location), 100);
+                break;
+            case 'employees':
+                showDirectory(param); // Usa tu función existente
+                break;
+        }
+    }
+}
+
+// Variable global del router
+let router;
+
+// ===================================
+// FUNCIONES DE NAVEGACIÓN NUEVAS
+// ===================================
+
+function goHome() {
+    if (router) router.navigateTo('/');
+}
+
+function goToLocations() {
+    if (router) router.navigateTo('/ubicaciones');
+}
+
+function goToLocationEmployees(locationName) {
+    if (router) {
+        const encodedLocation = encodeURIComponent(locationName);
+        router.navigateTo(`/ubicaciones/${encodedLocation}`);
+    }
+}
+
+function goToDirectory(type = 'completo') {
+    if (router) {
+        if (type === 'completo') {
+            router.navigateTo('/directorio');
+        } else {
+            router.navigateTo(`/directorio/${type}`);
+        }
+    }
+}
+
+// ===================================
+// INICIALIZAR ROUTER - CÓDIGO NUEVO
+// ===================================
+
+// Agregar a la función DOMContentLoaded existente
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar router después de un pequeño delay
+    setTimeout(() => {
+        router = new SimpleRouter();
+        console.log('✅ Router inicializado');
+    }, 500);
+});
+
+//FIN DEL CODIGO NUEVO
 
 // ===================================
 // INICIALIZACIÓN FINAL

@@ -7,8 +7,8 @@
         </div>
         
         <ul class="nav-links">
-            <li><a href="index.html" class="active">Inicio</a></li>
-            <li><a href="#" onclick="showDirectory()">Directorio</a></li>
+            <li><a href="/" onclick="event.preventDefault(); goHome();" class="active">Inicio</a></li>
+            <li><a href="/directorio" onclick="event.preventDefault(); goToDirectory();">Directorio</a></li>
             <li><a href="organigrama.html">Organigrama</a></li>
             <li><a href="contacto.html">Contacto</a></li>
         </ul>
@@ -40,11 +40,11 @@
     <!-- Menú móvil desplegable -->
     <div class="mobile-nav" id="mobileNav">
         <div class="mobile-nav-content">
-            <a href="index.html" class="mobile-nav-link active">
+            <a href="/" onclick="event.preventDefault(); goHome(); closeMobileMenu();" class="mobile-nav-link active">
                 <span class="mobile-nav-icon">🏠</span>
                 Inicio
             </a>
-            <a href="#" onclick="showDirectory('completo'); closeMobileMenu();" class="mobile-nav-link">
+            <a href="/directorio" onclick="event.preventDefault(); goToDirectory(); closeMobileMenu();" class="mobile-nav-link">
                 <span class="mobile-nav-icon">📋</span>
                 Directorio
             </a>
