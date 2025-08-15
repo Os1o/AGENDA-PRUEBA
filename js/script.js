@@ -390,7 +390,7 @@ function showHelp() {
 
 function showManual() {
     // Mostrar primera notificación con referencia
-    const firstNotification = showNotification('Abriendo manual de usuario...', 'info', 1000);
+    const firstNotification = showNotification('Abriendo manual de usuario...', 'info', 500);
     
     setTimeout(() => {
         // Cerrar la primera notificación específicamente
