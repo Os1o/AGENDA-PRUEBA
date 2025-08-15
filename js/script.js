@@ -1176,8 +1176,8 @@ async function showLocationsView() {
         await loadLocationsFromSupabase();
         
         // Ocultar controles de empleados y mostrar vista de ubicaciones
-        const searchContainer  = document.getElementById('.search-container');
-        const controlsSection  = document.getElementById('.controls-section');
+        const searchContainer = document.querySelector('.search-container');
+        const controlsSection = document.querySelector('.controls-section');
         const employeesGrid = document.getElementById('employeesGrid');
         
         if (searchContainer) searchContainer.style.display = 'none';
