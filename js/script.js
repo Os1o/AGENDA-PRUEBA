@@ -1260,7 +1260,7 @@ function createLocationCard(location, index) {
             </div>
         </div>
         
-        <button class="view-building-btn" onclick="goToLocationEmployees('${location.name}')">
+        <button class="view-building-btn" onclick="showEmployeesInLocation('${location.name}')">
             Ver todo el edificio
         </button>
     `;
