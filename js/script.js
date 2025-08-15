@@ -1327,6 +1327,8 @@ async function showEmployeesInLocation(locationName) {
         renderEmployees();
         
         console.log(`✅ ${allEmployees.length} empleados cargados para ${locationName}`);
+
+        updateBackButtonText();
         
     } catch (error) {
         console.error('Error cargando empleados de ubicación:', error);
@@ -1344,8 +1346,39 @@ function backToLocations() {
     if (directoryTitle) {
         directoryTitle.textContent = 'Directorio por Ubicación';
     }
+
+    updateBackButtonText();
 }
 
+
+// ===================================
+// NAVEGACIÓN INTELIGENTE
+// ===================================
+
+function smartBack() {
+    // Si estamos viendo empleados de una ubicación específica
+    if (currentLocation && currentModule === 'ubicacion') {
+        backToLocations();
+        updateBackButtonText();
+    } 
+    // En cualquier otro caso, regresar al inicio
+    else {
+        showMain();
+    }
+}
+
+function updateBackButtonText() {
+    const backButtonText = document.getElementById('backButtonText');
+    if (!backButtonText) return;
+    
+    if (currentLocation && currentModule === 'ubicacion') {
+        backButtonText.textContent = 'Volver a Edificios';
+    } else if (currentModule) {
+        backButtonText.textContent = 'Regresar al Inicio';
+    } else {
+        backButtonText.textContent = 'Regresar';
+    }
+}
 
 //FIN DEL CODIGO NUEVO
 
