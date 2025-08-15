@@ -1594,3 +1594,41 @@ body {
         align-self: center;
     }
 }
+
+/* ARREGLO PARA EL MENÚ MÓVIL */
+.mobile-nav {
+    z-index: 1002 !important; /* Asegurar que esté encima */
+    pointer-events: auto !important;
+}
+
+.mobile-nav-content {
+    z-index: 1003 !important;
+    pointer-events: auto !important;
+}
+
+.mobile-nav-link {
+    pointer-events: auto !important; /* Asegurar que sean clickeables */
+    position: relative;
+    z-index: 1004 !important;
+}
+
+.mobile-overlay {
+    z-index: 1000 !important; /* Más bajo que el menú */
+    pointer-events: auto !important;
+}
+
+/* IMPORTANTE: El overlay NO debe bloquear clics en el menú */
+.mobile-overlay.active {
+    pointer-events: none; /* ¡ESTA ES LA CLAVE! */
+}
+
+.mobile-overlay.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 300px; /* Dejar espacio para el menú */
+    bottom: 0;
+    pointer-events: auto; /* Solo esta parte captura clics */
+    background: transparent;
+}
