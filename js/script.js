@@ -1176,11 +1176,15 @@ async function showLocationsView() {
         await loadLocationsFromSupabase();
         
         // Ocultar controles de empleados y mostrar vista de ubicaciones
-        const controlsSection = document.getElementById('controlsSection');
+        const searchContainer  = document.getElementById('.search-container');
+        const controlsSection  = document.getElementById('.controls-section');
         const employeesGrid = document.getElementById('employeesGrid');
         
+        if (searchContainer) searchContainer.style.display = 'none';
         if (controlsSection) controlsSection.style.display = 'none';
         
+        
+
         if (employeesGrid) {
             employeesGrid.innerHTML = '';
             employeesGrid.className = 'locations-grid'; // Cambiar clase
