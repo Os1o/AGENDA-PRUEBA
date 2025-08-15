@@ -1380,6 +1380,483 @@ function updateBackButtonText() {
     }
 }
 
+
+
+
+// ===================================
+// SISTEMA DE ADSCRIPCIONES
+// ===================================
+
+// Variables globales para adscripciones
+let allUnits = [];
+let currentUnit = '';
+let currentSubUnit = '';
+
+// Función para cargar unidades y sub-unidades desde Supabase
+async function loadAdscripcionesFromSupabase() {
+    try {
+        console.log('Cargando adscripciones...');
+        
+        // Obtener todas las adscripciones únicas
+        const { data: empleados, error } = await supabase
+            .from('empleados')
+            .select('adscripcion, adscripcionCorta')
+            .not('adscripcion', 'is', null)
+            .not('adscripcion', 'eq', '');
+        
+        if (error) {
+            throw new Error(`Error cargando adscripciones: ${error.message}`);
+        }
+
+        // Agrupar por unidad principal y sub-unidades
+        const unitsMap = new Map();
+        
+        empleados.forEach(emp => {
+            const fullAdscripcion = emp.adscripcion || 'Sin adscripción';
+            const shortAdscripcion = emp.adscripcionCorta || 'Sin adscripción';
+            
+            // Determinar unidad principal basándome en palabras clave
+            const mainUnit = getMainUnit(fullAdscripcion);
+            
+            if (unitsMap.has(mainUnit)) {
+                const unit = unitsMap.get(mainUnit);
+                
+                // Agregar sub-unidad si no existe
+                if (!unit.subUnits.find(sub => sub.name === fullAdscripcion)) {
+                    unit.subUnits.push({
+                        name: fullAdscripcion,
+                        shortName: shortAdscripcion,
+                        count: 1
+                    });
+                } else {
+                    // Incrementar contador de la sub-unidad
+                    const subUnit = unit.subUnits.find(sub => sub.name === fullAdscripcion);
+                    subUnit.count++;
+                }
+                
+                unit.totalEmployees++;
+            } else {
+                // Crear nueva unidad principal
+                unitsMap.set(mainUnit, {
+                    name: mainUnit,
+                    icon: getUnitIcon(mainUnit),
+                    totalEmployees: 1,
+                    subUnits: [{
+                        name: fullAdscripcion,
+                        shortName: shortAdscripcion,
+                        count: 1
+                    }]
+                });
+            }
+        });
+        
+        // Convertir a array y ordenar
+        allUnits = Array.from(unitsMap.values())
+            .sort((a, b) => a.name.localeCompare(b.name));
+        
+        // Ordenar sub-unidades dentro de cada unidad
+        allUnits.forEach(unit => {
+            unit.subUnits.sort((a, b) => a.name.localeCompare(b.name));
+        });
+        
+        console.log(`✅ ${allUnits.length} unidades principales cargadas`);
+        return allUnits;
+        
+    } catch (error) {
+        console.error('Error cargando adscripciones:', error);
+        return [];
+    }
+}
+
+// Función para determinar la unidad principal
+function getMainUnit(adscripcion) {
+    const lower = adscripcion.toLowerCase();
+    
+    if (lower.includes('dirección jurídica') && 
+        !lower.includes('unidad') && 
+        !lower.includes('coordinación')) {
+        return 'Dirección Jurídica';
+    }
+    
+    if (lower.includes('asuntos consultivos') || 
+        lower.includes('órganos fiscalizadores')) {
+        return 'Unidad de Asuntos Consultivos y de Atención a Órganos Fiscalizadores';
+    }
+    
+    if (lower.includes('investigaciones') || 
+        lower.includes('procesos jurídicos') ||
+        lower.includes('contenciosos') ||
+        lower.includes('constitucional') ||
+        lower.includes('laboral')) {
+        return 'Unidad de Investigaciones y Procesos Jurídicos';
+    }
+    
+    if (lower.includes('derechos humanos') ||
+        lower.includes('igualdad') ||
+        lower.includes('género') ||
+        lower.includes('inclusión') ||
+        lower.includes('quejas')) {
+        return 'Unidad de Derechos Humanos';
+    }
+    
+    if (lower.includes('administrativa')) {
+        return 'Coordinación Administrativa';
+    }
+    
+    // Si no coincide con ninguna, usar la adscripción completa
+    return adscripcion;
+}
+
+// Función para obtener icono según la unidad
+function getUnitIcon(unit) {
+    const lower = unit.toLowerCase();
+    
+    if (lower.includes('dirección jurídica')) return '🏛️';
+    if (lower.includes('asuntos consultivos')) return '📋';
+    if (lower.includes('investigaciones')) return '⚖️';
+    if (lower.includes('derechos humanos')) return '👥';
+    if (lower.includes('administrativa')) return '📁';
+    
+    return '🏢';
+}
+
+// Función para mostrar la vista de unidades principales
+async function showUnitsView() {
+    try {
+        showLoading();
+        
+        // Cargar unidades
+        await loadAdscripcionesFromSupabase();
+        
+        // Ocultar controles de búsqueda
+        const searchContainer = document.querySelector('.search-container');
+        const controlsSection = document.querySelector('.controls-section');
+        
+        if (searchContainer) searchContainer.style.display = 'none';
+        if (controlsSection) controlsSection.style.display = 'none';
+        
+        const employeesGrid = document.getElementById('employeesGrid');
+        
+        if (employeesGrid) {
+            employeesGrid.innerHTML = '';
+            employeesGrid.className = 'units-grid';
+            renderUnits();
+        }
+        
+        showContent();
+        
+    } catch (error) {
+        console.error('Error mostrando unidades:', error);
+        showError('Error cargando unidades');
+    }
+}
+
+// Función para renderizar las tarjetas de unidades principales
+function renderUnits() {
+    const grid = document.getElementById('employeesGrid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+
+    if (!allUnits || allUnits.length === 0) {
+        grid.innerHTML = `
+            <div class="loading" style="grid-column: 1 / -1;">
+                🏛️ No se encontraron unidades
+            </div>
+        `;
+        return;
+    }
+
+    allUnits.forEach((unit, index) => {
+        const unitCard = createUnitCard(unit, index);
+        grid.appendChild(unitCard);
+    });
+
+    // Actualizar contador
+    const totalRecords = document.getElementById('totalRecords');
+    if (totalRecords) {
+        totalRecords.textContent = `${allUnits.length} unidad${allUnits.length !== 1 ? 'es' : ''} encontrada${allUnits.length !== 1 ? 's' : ''}`;
+    }
+}
+
+// Función para crear tarjeta de unidad principal
+function createUnitCard(unit, index) {
+    const unitCard = document.createElement('div');
+    unitCard.className = 'unit-card';
+    unitCard.style.animationDelay = `${index * 0.1}s`;
+    
+    unitCard.innerHTML = `
+        <div class="unit-header">
+            <div class="unit-icon">${unit.icon}</div>
+            <div class="unit-info">
+                <div class="unit-name">${unit.name}</div>
+                <div class="unit-subunits">${unit.subUnits.length} coordinación${unit.subUnits.length !== 1 ? 'es' : ''}</div>
+            </div>
+        </div>
+        
+        <div class="unit-stats">
+            <div class="employee-count">
+                <span class="count-number">${unit.totalEmployees}</span>
+                <span class="count-label">empleado${unit.totalEmployees !== 1 ? 's' : ''}</span>
+            </div>
+        </div>
+        
+        <button class="view-unit-btn" onclick="showSubUnitsInUnit('${unit.name}')">
+            Ver coordinaciones
+        </button>
+    `;
+    
+    return unitCard;
+}
+
+// Función para mostrar sub-unidades de una unidad principal
+function showSubUnitsInUnit(unitName) {
+    currentUnit = unitName;
+    
+    const unit = allUnits.find(u => u.name === unitName);
+    if (!unit) return;
+    
+    // Actualizar título
+    const directoryTitle = document.querySelector('.directory-title');
+    if (directoryTitle) {
+        directoryTitle.textContent = unitName;
+    }
+    
+    // Mostrar controles
+    const searchContainer = document.querySelector('.search-container');
+    const controlsSection = document.querySelector('.controls-section');
+    
+    if (searchContainer) searchContainer.style.display = 'none'; // Mantener oculta la búsqueda
+    if (controlsSection) controlsSection.style.display = 'none'; // Mantener ocultos los controles
+    
+    const employeesGrid = document.getElementById('employeesGrid');
+    if (employeesGrid) {
+        employeesGrid.className = 'subunits-grid';
+        employeesGrid.innerHTML = '';
+        renderSubUnits(unit.subUnits);
+    }
+    
+    updateBackButtonText();
+}
+
+// Función para renderizar sub-unidades
+function renderSubUnits(subUnits) {
+    const grid = document.getElementById('employeesGrid');
+    if (!grid) return;
+
+    subUnits.forEach((subUnit, index) => {
+        const subUnitCard = createSubUnitCard(subUnit, index);
+        grid.appendChild(subUnitCard);
+    });
+
+    // Actualizar contador
+    const totalRecords = document.getElementById('totalRecords');
+    if (totalRecords) {
+        totalRecords.textContent = `${subUnits.length} coordinación${subUnits.length !== 1 ? 'es' : ''} encontrada${subUnits.length !== 1 ? 's' : ''}`;
+    }
+}
+
+// Función para crear tarjeta de sub-unidad
+function createSubUnitCard(subUnit, index) {
+    const subUnitCard = document.createElement('div');
+    subUnitCard.className = 'subunit-card';
+    subUnitCard.style.animationDelay = `${index * 0.1}s`;
+    
+    subUnitCard.innerHTML = `
+        <div class="subunit-header">
+            <div class="subunit-icon">📋</div>
+            <div class="subunit-info">
+                <div class="subunit-name">${subUnit.name}</div>
+                <div class="subunit-short">${subUnit.shortName}</div>
+            </div>
+        </div>
+        
+        <div class="subunit-stats">
+            <div class="employee-count">
+                <span class="count-number">${subUnit.count}</span>
+                <span class="count-label">empleado${subUnit.count !== 1 ? 's' : ''}</span>
+            </div>
+        </div>
+        
+        <button class="view-subunit-btn" onclick="showEmployeesInSubUnit('${subUnit.name}')">
+            Ver empleados
+        </button>
+    `;
+    
+    return subUnitCard;
+}
+
+// Función para mostrar empleados de una sub-unidad específica
+async function showEmployeesInSubUnit(subUnitName) {
+    try {
+        currentSubUnit = subUnitName;
+        
+        showLoading();
+        
+        // Cargar empleados de esa sub-unidad específica
+        const { data: empleados, error } = await supabase
+            .from('empleados')
+            .select('*')
+            .eq('adscripcion', subUnitName)
+            .order('nomExt', { ascending: true });
+        
+        if (error) {
+            throw new Error(`Error cargando empleados: ${error.message}`);
+        }
+        
+        // Mapear empleados
+        allEmployees = empleados.map(emp => ({
+            name: emp.nomExt || 'Sin nombre',
+            extension: emp.extension?.toString() || 'Sin extensión',
+            floor: emp.piso ? `Piso ${emp.piso}` : 'Sin ubicación',
+            edificio: emp.edificio || 'N/A',
+            categoria: emp.categoria || 'Sin categoría',
+            adscripcion: emp.adscripcion || 'Sin adscripción',
+            adscripcionCorta: emp.adscripcionCorta || 'Sin adscripción',
+            ubicacion: emp.ubicacion || 'Sin ubicación'
+        }));
+        
+        currentEmployees = [...allEmployees];
+        
+        // Actualizar título
+        const directoryTitle = document.querySelector('.directory-title');
+        if (directoryTitle) {
+            directoryTitle.textContent = `Empleados - ${subUnitName}`;
+        }
+        
+        // Mostrar vista de empleados con controles
+        const searchContainer = document.querySelector('.search-container');
+        const controlsSection = document.querySelector('.controls-section');
+        
+        if (searchContainer) searchContainer.style.display = 'flex';
+        if (controlsSection) controlsSection.style.display = 'flex';
+        
+        const employeesGrid = document.getElementById('employeesGrid');
+        if (employeesGrid) {
+            employeesGrid.className = 'employees-grid';
+        }
+        
+        showContent();
+        renderEmployees();
+        updateBackButtonText();
+        
+        console.log(`✅ ${allEmployees.length} empleados cargados para ${subUnitName}`);
+        
+    } catch (error) {
+        console.error('Error cargando empleados de sub-unidad:', error);
+        showError(`Error cargando empleados de ${subUnitName}`);
+    }
+}
+
+// Funciones de navegación hacia atrás
+function backToUnits() {
+    currentUnit = '';
+    currentSubUnit = '';
+    showUnitsView();
+    
+    const directoryTitle = document.querySelector('.directory-title');
+    if (directoryTitle) {
+        directoryTitle.textContent = 'Directorio por Adscripción';
+    }
+    
+    updateBackButtonText();
+}
+
+function backToSubUnits() {
+    currentSubUnit = '';
+    showSubUnitsInUnit(currentUnit);
+    updateBackButtonText();
+}
+
+// Actualizar la función showDirectory para manejar adscripciones
+function showDirectory(module) {
+    if (isLoading) return;
+
+    currentModule = module;
+    
+    const mainPage = document.getElementById('mainPage');
+    const directoryPage = document.getElementById('directoryPage');
+    
+    if (mainPage) mainPage.style.display = 'none';
+    if (directoryPage) directoryPage.style.display = 'block';
+    
+    // Actualizar estado del menú
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach(link => link.classList.remove('active'));
+    
+    const directoryLink = document.querySelector('.nav-links a[onclick*="showDirectory"]');
+    if (directoryLink) {
+        directoryLink.classList.add('active');
+    }
+    
+    // Actualizar título según el módulo
+    const titles = {
+        'ubicacion': 'Directorio por Ubicación',
+        'adscripcion': 'Directorio por Adscripción', 
+        'categoria': 'Directorio por Categoría',
+        'completo': 'Listado Completo'
+    };
+    
+    const directoryTitle = document.querySelector('.directory-title');
+    if (directoryTitle) {
+        directoryTitle.textContent = titles[module] || 'Agenda Dirección Jurídica';
+    }
+    
+    // Mostrar vista según el módulo
+    if (module === 'ubicacion') {
+        showLocationsView();
+    } else if (module === 'adscripcion') {
+        showUnitsView();
+    } else {
+        showEmployeesView();
+    }
+    
+    // Limpiar búsqueda
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.value = '';
+}
+
+// Actualizar la función smartBack para manejar adscripciones
+function smartBack() {
+    // Si estamos viendo empleados de una sub-unidad específica
+    if (currentSubUnit && currentModule === 'adscripcion') {
+        backToSubUnits();
+    }
+    // Si estamos viendo sub-unidades de una unidad
+    else if (currentUnit && currentModule === 'adscripcion') {
+        backToUnits();
+    }
+    // Si estamos viendo empleados de una ubicación específica
+    else if (currentLocation && currentModule === 'ubicacion') {
+        backToLocations();
+    } 
+    // En cualquier otro caso, regresar al inicio
+    else {
+        showMain();
+    }
+}
+
+// Actualizar la función updateBackButtonText
+function updateBackButtonText() {
+    const backButtonText = document.getElementById('backButtonText');
+    if (!backButtonText) return;
+    
+    if (currentSubUnit && currentModule === 'adscripcion') {
+        backButtonText.textContent = 'Volver a Coordinaciones';
+    } else if (currentUnit && currentModule === 'adscripcion') {
+        backButtonText.textContent = 'Volver a Unidades';
+    } else if (currentLocation && currentModule === 'ubicacion') {
+        backButtonText.textContent = 'Volver a Edificios';
+    } else if (currentModule) {
+        backButtonText.textContent = 'Regresar al Inicio';
+    } else {
+        backButtonText.textContent = 'Regresar';
+    }
+}
+
+
+
+
 //FIN DEL CODIGO NUEVO
 
 // ===================================
