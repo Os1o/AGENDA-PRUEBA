@@ -465,9 +465,16 @@ function setupHeaderEvents() {
     }
     
     // Menú móvil
+    // 🎯 CAMBIAR: Mejorar el manejo del overlay
     const mobileOverlay = document.getElementById('mobileOverlay');
     if (mobileOverlay) {
-        mobileOverlay.addEventListener('click', closeMobileMenu);
+        mobileOverlay.addEventListener('click', function(e) {
+            // Solo cerrar si el clic fue en el overlay, no en el menú
+            const mobileNav = document.getElementById('mobileNav');
+            if (e.target === mobileOverlay) {
+                closeMobileMenu();
+            }
+        });
     }
 }
 
