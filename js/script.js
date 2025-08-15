@@ -393,7 +393,7 @@ function showManual() {
     showNotification('Abriendo manual de usuario...', 'info');
     setTimeout(() => {
         showNotification('Manual disponible en el portal de empleados', 'success');
-    }, 1500);
+    }, 2500);
 }
 
 // Reportar problema
